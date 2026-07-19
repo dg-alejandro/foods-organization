@@ -17,10 +17,10 @@ const inputCls =
   'mt-1 w-full rounded-lg border border-stone-200 px-3 py-2 focus:border-orange-400 focus:outline-none'
 
 const MEAL_BADGE: Record<MealType, string> = {
-  desayuno: 'bg-sky-100 text-sky-700',
-  almuerzo: 'bg-amber-100 text-amber-700',
-  cena: 'bg-indigo-100 text-indigo-700',
-  snack: 'bg-emerald-100 text-emerald-700',
+  desayuno: 'bg-amber-50 text-amber-800',
+  almuerzo: 'bg-orange-100 text-orange-700',
+  cena: 'bg-slate-100 text-slate-600',
+  snack: 'bg-rose-50 text-rose-700',
 }
 
 interface FormItem {

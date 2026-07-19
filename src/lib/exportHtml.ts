@@ -141,19 +141,19 @@ export function buildWeekExportHtml(data: AppData, week: WeekPlan): string {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(weekLabel(week.weekStart))}</title>
 <style>
-:root{--terra:#cd6f3d;--terra-dark:#92411a;--cream:#fbf7f0;--ink:#44403c;--muted:#a8a29e;--line:#f5ead8}
+:root{--terra:#4f6551;--terra-dark:#324237;--cream:#f8f7f2;--ink:#3b3a36;--muted:#a29e94;--line:#eae8dc}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--cream);color:var(--ink);padding-bottom:3rem}
 header{position:sticky;top:0;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:.7rem 1rem;z-index:5}
 header h1{font-family:Georgia,'Times New Roman',serif;font-size:1.05rem;color:var(--terra-dark)}
 header p{font-size:.75rem;color:var(--muted)}
 nav{display:flex;gap:.4rem;margin-top:.5rem}
-nav button{flex:1;border:0;border-radius:999px;padding:.45rem .6rem;font-size:.85rem;font-weight:600;background:#f0e4d2;color:var(--ink)}
+nav button{flex:1;border:0;border-radius:999px;padding:.45rem .6rem;font-size:.85rem;font-weight:600;background:#e6e4d6;color:var(--ink)}
 nav button.active{background:var(--terra);color:#fff}
 main{max-width:640px;margin:0 auto;padding:1rem}
 section.tab{display:none}
 section.tab.active{display:block}
-.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:.9rem 1rem;margin-bottom:.8rem;box-shadow:0 2px 8px rgb(92 42 22 / .06)}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:.9rem 1rem;margin-bottom:.8rem;box-shadow:0 2px 8px rgb(34 44 37 / .06)}
 .card h3{font-family:Georgia,serif;font-size:1rem;color:var(--terra-dark);margin-bottom:.4rem}
 .note{font-size:.8rem;font-style:italic;color:var(--muted);margin-bottom:.3rem}
 .empty{font-size:.8rem;color:var(--muted)}
@@ -172,7 +172,7 @@ ul{list-style:none}
 .shop input:checked ~ .name{text-decoration:line-through;color:var(--muted)}
 .shop .qty{font-size:.75rem;color:var(--muted);flex:none}
 .shop .price{font-size:.8rem;color:var(--ink);flex:none;min-width:3.4rem;text-align:right}
-.total-card{background:linear-gradient(135deg,var(--terra),#b0521f);color:#fff;border:0}
+.total-card{background:linear-gradient(135deg,var(--terra),#324237);color:#fff;border:0}
 .total-card h3{color:#fff}
 .total-card .big{font-size:1.7rem;font-weight:800}
 .total-card p{font-size:.72rem;opacity:.85;margin-top:.25rem}

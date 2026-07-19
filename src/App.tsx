@@ -22,13 +22,13 @@ function App() {
     <div className="min-h-screen">
       <div className="bg-blob left-[-10%] top-[-15%] h-96 w-96 bg-orange-300" />
       <div
-        className="bg-blob right-[-8%] top-[35%] h-80 w-80 bg-amber-200"
+        className="bg-blob right-[-8%] top-[35%] h-80 w-80 bg-orange-200"
         style={{ animationDelay: '-11s' }}
       />
 
       <header className="sticky top-0 z-10 border-b border-orange-100 bg-white/70 backdrop-blur-md">
         <div className="mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center gap-x-6 gap-y-2">
-          <h1 className="bg-gradient-to-r from-orange-700 via-orange-500 to-amber-500 bg-clip-text text-xl font-black text-transparent">
+          <h1 className="bg-gradient-to-r from-orange-800 via-orange-600 to-orange-400 bg-clip-text text-xl font-black text-transparent">
             🍽️ Comidas de la semana
           </h1>
           <nav className="flex gap-1">
@@ -37,9 +37,9 @@ function App() {
                 key={t.key}
                 type="button"
                 onClick={() => setTab(t.key)}
-                className={`rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
+                className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-all duration-200 ${
                   tab === t.key
-                    ? 'bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-md shadow-orange-500/30 scale-105'
+                    ? 'bg-orange-600 text-white shadow-md shadow-orange-600/25'
                     : 'text-stone-600 hover:bg-orange-100'
                 }`}
               >

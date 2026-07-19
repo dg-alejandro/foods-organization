@@ -6,17 +6,21 @@
   --font-sans: 'Nunito Sans Variable', 'Segoe UI', system-ui, sans-serif;
   --font-display: 'Fraunces Variable', Georgia, serif;
 
-  /* Paleta terracota cálida (sustituye a la escala orange por defecto) */
-  --color-orange-50: #fbf7f0;
-  --color-orange-100: #f5ead8;
-  --color-orange-200: #ecd5b4;
-  --color-orange-300: #e0b285;
-  --color-orange-400: #d98d55;
-  --color-orange-500: #cd6f3d;
-  --color-orange-600: #b0521f;
-  --color-orange-700: #92411a;
-  --color-orange-800: #753418;
-  --color-orange-900: #5c2a16;
+  /*
+   * Paleta "botánica": marfil, salvia y verde bosque.
+   * Sustituye a la escala orange por defecto para reteñir toda la app
+   * sin tocar las clases de los componentes.
+   */
+  --color-orange-50: #f8f7f2;
+  --color-orange-100: #eae8dc;
+  --color-orange-200: #d6d4c0;
+  --color-orange-300: #b0b297;
+  --color-orange-400: #83906f;
+  --color-orange-500: #4f6551;
+  --color-orange-600: #3d5142;
+  --color-orange-700: #324237;
+  --color-orange-800: #2a372e;
+  --color-orange-900: #222c25;
 }
 
 body {
@@ -28,7 +32,12 @@ body {
   h2,
   h3 {
     font-family: var(--font-display);
+    font-weight: 600;
     letter-spacing: -0.015em;
+  }
+
+  ::selection {
+    background: var(--color-orange-200);
   }
 }
 
@@ -37,10 +46,10 @@ body {
   position: fixed;
   border-radius: 9999px;
   filter: blur(90px);
-  opacity: 0.3;
+  opacity: 0.25;
   pointer-events: none;
   z-index: -1;
-  animation: blob-float 22s ease-in-out infinite alternate;
+  animation: blob-float 24s ease-in-out infinite alternate;
 }
 
 @keyframes blob-float {
@@ -68,7 +77,7 @@ body {
   }
 }
 
-/* Las tarjetas blancas se elevan ligeramente al pasar el ratón */
+/* Las tarjetas blancas se elevan con delicadeza al pasar el ratón */
 main .rounded-2xl.bg-white {
   transition:
     transform 0.2s ease,
@@ -76,6 +85,6 @@ main .rounded-2xl.bg-white {
 }
 
 main .rounded-2xl.bg-white:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px -10px rgb(92 42 22 / 0.22);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px -12px rgb(34 44 37 / 0.25);
 }
