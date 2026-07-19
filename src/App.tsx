@@ -21,7 +21,7 @@ function App() {
   return (
     <div className="min-h-screen">
       <header className="border-b border-orange-100 bg-white/80 backdrop-blur sticky top-0 z-10">
-        <div className="mx-auto max-w-5xl px-4 py-3 flex flex-wrap items-center gap-x-6 gap-y-2">
+        <div className="mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center gap-x-6 gap-y-2">
           <h1 className="text-lg font-bold text-orange-900">
             🍽️ Comidas de la semana
           </h1>
@@ -45,7 +45,7 @@ function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-6">
+      <main className="mx-auto max-w-6xl px-4 py-6">
         {tab === 'semana' && <SemanaPage />}
         {tab === 'recetas' && <RecetasPage />}
         {tab === 'ingredientes' && <IngredientesPage />}
