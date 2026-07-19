@@ -1,4 +1,5 @@
-import type { AppData, Person } from './types'
+import type { AppData, Ingredient, Person } from './types'
+import { SEED_INGREDIENTS } from './seed'
 
 const STORAGE_KEY = 'comidas.app.v1'
 
@@ -14,14 +15,27 @@ function defaultPersons(): Person[] {
 }
 
 export function defaultData(): AppData {
-  return {
+  return withSeed({
     version: 1,
     persons: defaultPersons(),
     ingredients: [],
     recipes: [],
     weeks: [],
     activeWeekId: null,
-  }
+  })
+}
+
+/**
+ * Añade los ingredientes de ejemplo una sola vez (flag `seeded`),
+ * sin duplicar los que ya existan por nombre.
+ */
+function withSeed(data: AppData): AppData {
+  if (data.seeded === true) return data
+  const existing = new Set(data.ingredients.map((i) => i.name.toLocaleLowerCase('es')))
+  const added: Ingredient[] = SEED_INGREDIENTS.filter(
+    (s) => !existing.has(s.name.toLocaleLowerCase('es')),
+  ).map((s) => ({ ...s, id: newId() }))
+  return { ...data, ingredients: [...data.ingredients, ...added], seeded: true }
 }
 
 /** Comprobación mínima de forma para no cargar basura. */
@@ -46,7 +60,9 @@ export function loadData(): AppData {
       console.warn('Datos guardados con formato inesperado; se parte de cero.')
       return defaultData()
     }
-    return parsed
+    const seeded = withSeed(parsed)
+    if (seeded !== parsed) saveData(seeded)
+    return seeded
   } catch {
     return defaultData()
   }

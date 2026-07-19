@@ -145,4 +145,6 @@ export interface AppData {
   weeks: WeekPlan[]
   /** Semana que se está planificando ahora mismo. */
   activeWeekId: string | null
+  /** Si ya se sembraron los ingredientes de ejemplo. */
+  seeded?: boolean
 }
