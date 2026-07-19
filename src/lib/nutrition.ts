@@ -72,6 +72,20 @@ export function priceIsStale(ing: Ingredient): boolean {
   return Number.isFinite(updated) && Date.now() - updated > STALE_PRICE_MS
 }
 
+/** Reparto calórico: % de las kcal que aporta cada macro (4/4/9 kcal por g). */
+export function calorieSplit(m: Macros): { protein: number; carbs: number; fat: number } | null {
+  const p = m.protein * 4
+  const c = m.carbs * 4
+  const f = m.fat * 9
+  const sum = p + c + f
+  if (sum <= 0) return null
+  return {
+    protein: Math.round((p / sum) * 100),
+    carbs: Math.round((c / sum) * 100),
+    fat: Math.round((f / sum) * 100),
+  }
+}
+
 export type IngredientMap = Map<string, Ingredient>
 
 export function ingredientMap(ingredients: Ingredient[]): IngredientMap {

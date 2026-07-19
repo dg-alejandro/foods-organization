@@ -72,8 +72,7 @@ export function buildWeekExportHtml(data: AppData, week: WeekPlan): string {
     .join('\n')
 
   const shoppingLines = aggregateWeek(week, recipesById, ingredientsById)
-  const haveAtHome = new Set(week.shopping.haveAtHome)
-  const groups = groupByCategory(shoppingLines.filter((l) => !haveAtHome.has(l.ingredientId)))
+  const groups = groupByCategory(shoppingLines.filter((l) => l.toBuyQty > 0))
   const totals = shoppingTotals(shoppingLines, week)
 
   const shoppingHtml = groups
@@ -82,7 +81,7 @@ export function buildWeekExportHtml(data: AppData, week: WeekPlan): string {
   <h3>${CATEGORY_LABELS[g.category]}</h3>
   <ul class="shop">${g.lines
     .map(
-      (l) => `<li><label><input type="checkbox" data-key="${esc(l.ingredientId)}"><span class="name">${esc(l.name)}</span><span class="qty">${fmtNum(l.qty, l.qty % 1 === 0 ? 0 : 1)} ${l.unit}</span><span class="price">${l.cost === null ? '—' : fmtEuro(l.cost)}</span></label></li>`,
+      (l) => `<li><label><input type="checkbox" data-key="${esc(l.ingredientId)}"><span class="name">${esc(l.name)}</span><span class="qty">${fmtNum(l.toBuyQty, l.toBuyQty % 1 === 0 ? 0 : 1)} ${l.unit}</span><span class="price">${l.costToBuy === null ? '—' : fmtEuro(l.costToBuy)}</span></label></li>`,
     )
     .join('')}</ul>
 </section>`,
@@ -207,8 +206,9 @@ ${dayCards}
   </section>
   <section class="tab" id="tab-compra"><h2>Lista de la compra</h2>
   <section class="card total-card">
-    <h3>Total estimado</h3>
-    <div class="big">${fmtEuro(totals.total)}</div>
+    <h3>Total a comprar</h3>
+    <div class="big">${fmtEuro(totals.totalToBuy)}</div>
+    ${totals.totalNeeded !== totals.totalToBuy ? `<p>La semana necesita ${fmtEuro(totals.totalNeeded)}; ya hay en casa ${fmtEuro(totals.totalNeeded - totals.totalToBuy)}.</p>` : ''}
     ${totals.linesWithoutPrice > 0 ? `<p>⚠️ ${totals.linesWithoutPrice === 1 ? '1 producto sin precio no cuenta' : `${totals.linesWithoutPrice} productos sin precio no cuentan`} en el total.</p>` : ''}
   </section>
 ${shoppingHtml}

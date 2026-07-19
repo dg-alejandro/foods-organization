@@ -109,11 +109,13 @@ export interface ShoppingExtra {
 export interface ShoppingState {
   /** Claves de línea (ingredientId) marcadas como compradas. */
   checked: string[]
-  /** Claves de línea marcadas como "ya lo tenemos en casa". */
+  /** Legado: líneas enteras marcadas como "ya lo tenemos" (hoy se usa atHomeQty). */
   haveAtHome: string[]
   extras: ShoppingExtra[]
   /** Cantidades ajustadas a mano por ingredientId (sustituyen a la calculada). */
   qtyOverrides?: Record<string, number>
+  /** Cantidad que ya hay en casa por ingredientId; se descuenta de lo necesario. */
+  atHomeQty?: Record<string, number>
 }
 
 export interface WeekPlan {

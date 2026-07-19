@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useAppStore } from '../data/store'
 import { MEAL_TYPES, MEAL_TYPE_LABELS } from '../data/types'
 import type { DayPlan, MealSlot, MealType, Person, WeekPlan } from '../data/types'
-import { ingredientMap, recipeMacrosPerServing } from '../lib/nutrition'
+import { calorieSplit, ingredientMap, recipeMacrosPerServing } from '../lib/nutrition'
 import { addDays, dayLabel, mondayOf, parseISODate, toISODate, weekLabel } from '../lib/dates'
 import {
   MAIN_MEALS,
@@ -12,7 +12,7 @@ import {
   emptyWeek,
   recipeMap,
   targetStatus,
-  weekAvgForPerson,
+  weekMacrosForPerson,
 } from '../lib/planner'
 import type { TargetStatus } from '../lib/planner'
 import { fmtNum, parseNum } from '../lib/format'
@@ -323,6 +323,8 @@ export function SemanaPage() {
       )
     }
     const recipe = recipesById.get(slot.recipeId)
+    const perKcal =
+      recipe === undefined ? null : recipeMacrosPerServing(recipe, ingredientsById).kcal
     return (
       <button
         type="button"
@@ -334,21 +336,14 @@ export function SemanaPage() {
         </span>
         <span className="text-[10px] text-stone-400">
           {fmtNum(slot.servings, slot.servings % 1 === 0 ? 0 : 1)} rac.
+          {perKcal !== null && ` · ${fmtNum(perKcal)} kcal/rac.`}
         </span>
       </button>
     )
   }
 
-  const summaryFor = (p: Person) => {
-    const { avg, daysPlanned } = weekAvgForPerson(
-      week,
-      p.id,
-      personCount,
-      recipesById,
-      ingredientsById,
-    )
-    return { avg, daysPlanned }
-  }
+  const summaryFor = (p: Person) =>
+    weekMacrosForPerson(week, p.id, personCount, recipesById, ingredientsById)
 
   return (
     <div>
@@ -417,13 +412,14 @@ export function SemanaPage() {
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {data.persons.map((p) => {
-          const { avg, daysPlanned } = summaryFor(p)
+          const { avg, total, daysPlanned } = summaryFor(p)
           const t = p.targets
+          const split = calorieSplit(avg)
           const stats = [
-            { label: 'kcal', value: avg.kcal, target: t?.kcal, decimals: 0 },
-            { label: 'P (g)', value: avg.protein, target: t?.protein, decimals: 0 },
-            { label: 'H (g)', value: avg.carbs, target: t?.carbs, decimals: 0 },
-            { label: 'G (g)', value: avg.fat, target: t?.fat, decimals: 0 },
+            { label: 'kcal', value: avg.kcal, total: total.kcal, target: t?.kcal },
+            { label: 'P (g)', value: avg.protein, total: total.protein, target: t?.protein },
+            { label: 'H (g)', value: avg.carbs, total: total.carbs, target: t?.carbs },
+            { label: 'G (g)', value: avg.fat, total: total.fat, target: t?.fat },
           ]
           return (
             <div key={p.id} className="rounded-2xl border border-orange-100 bg-white p-4 shadow-sm">
@@ -438,19 +434,42 @@ export function SemanaPage() {
               <div className="mt-2 grid grid-cols-4 gap-2 text-center">
                 {stats.map((s) => {
                   const status = daysPlanned === 0 ? 'none' : targetStatus(s.value, s.target)
+                  const target = s.target !== undefined && s.target > 0 ? s.target : null
+                  const pct = target !== null ? Math.round((s.value / target) * 100) : null
                   return (
                     <div key={s.label} className="rounded-lg bg-stone-50 px-1 py-2">
                       <div className={`text-sm font-bold ${STATUS_TEXT[status]}`}>
-                        {fmtNum(s.value, s.decimals)}
+                        {fmtNum(s.value)}
                       </div>
                       <div className="text-[10px] text-stone-400">
                         {s.label}
-                        {s.target !== undefined && s.target > 0 && ` / ${fmtNum(s.target)}`}
+                        {target !== null && ` / ${fmtNum(target)}`}
+                      </div>
+                      <div className="mt-0.5 text-[9px] text-stone-400">
+                        sem. {fmtNum(s.total)}
+                        {pct !== null && daysPlanned > 0 && (
+                          <span className={STATUS_TEXT[status]}> · {fmtNum(pct)} %</span>
+                        )}
                       </div>
                     </div>
                   )
                 })}
               </div>
+              {split !== null && daysPlanned > 0 && (
+                <div className="mt-3">
+                  <div className="flex h-1.5 overflow-hidden rounded-full bg-stone-100">
+                    <div className="bg-rose-300" style={{ width: `${split.protein}%` }} />
+                    <div className="bg-amber-300" style={{ width: `${split.carbs}%` }} />
+                    <div className="bg-sky-300" style={{ width: `${split.fat}%` }} />
+                  </div>
+                  <p className="mt-1 text-[10px] text-stone-400">
+                    Reparto calórico:{' '}
+                    <span className="text-rose-400">●</span> P {fmtNum(split.protein)} % ·{' '}
+                    <span className="text-amber-400">●</span> H {fmtNum(split.carbs)} % ·{' '}
+                    <span className="text-sky-400">●</span> G {fmtNum(split.fat)} %
+                  </p>
+                </div>
+              )}
             </div>
           )
         })}
@@ -495,13 +514,13 @@ export function SemanaPage() {
               ))}
             </tr>
             <tr className="border-b border-orange-50 bg-orange-50/40">
-              <th className="px-3 py-2 text-left text-xs font-medium text-stone-500">Total kcal</th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-stone-500">Totales</th>
               {week.days.map((day, i) => (
                 <td key={i} className="px-1.5 py-2 text-center align-top">
                   {!dayIsPlanned(day) ? (
                     <span className="text-stone-300">—</span>
                   ) : (
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       {data.persons.map((p) => {
                         const macros = dayMacrosForPerson(
                           day,
@@ -512,12 +531,16 @@ export function SemanaPage() {
                         )
                         const status = targetStatus(macros.kcal, p.targets?.kcal)
                         return (
-                          <div
-                            key={p.id}
-                            title={`${p.name}: ${fmtNum(macros.kcal)} kcal · P ${fmtNum(macros.protein, 1)} · H ${fmtNum(macros.carbs, 1)} · G ${fmtNum(macros.fat, 1)}`}
-                            className={`cursor-help rounded-full px-1.5 py-0.5 text-[11px] font-medium ${STATUS_CHIP[status]}`}
-                          >
-                            {p.name.slice(0, 3)} {fmtNum(macros.kcal)}
+                          <div key={p.id}>
+                            <div
+                              className={`rounded-full px-1.5 py-0.5 text-[11px] font-medium ${STATUS_CHIP[status]}`}
+                            >
+                              {p.name.slice(0, 3)} {fmtNum(macros.kcal)}
+                            </div>
+                            <div className="mt-0.5 text-[9px] leading-tight text-stone-400">
+                              P {fmtNum(macros.protein)} · H {fmtNum(macros.carbs)} · G{' '}
+                              {fmtNum(macros.fat)}
+                            </div>
                           </div>
                         )
                       })}

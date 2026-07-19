@@ -12,10 +12,16 @@ export interface ShoppingLine {
   unit: Unit
   /** Cantidad calculada a partir de las recetas de la semana. */
   computedQty: number
-  /** Cantidad efectiva (ajuste manual si existe, si no la calculada). */
-  qty: number
-  /** Coste estimado de `qty`, o null si el ingrediente no tiene precio. */
-  cost: number | null
+  /** Cantidad necesaria (ajuste manual si existe, si no la calculada). */
+  neededQty: number
+  /** Cantidad que ya hay en casa. */
+  atHomeQty: number
+  /** Cantidad a comprar: necesaria menos lo que hay en casa. */
+  toBuyQty: number
+  /** Coste de lo necesario, o null si el ingrediente no tiene precio. */
+  costNeeded: number | null
+  /** Coste de lo que hay que comprar, o null si no tiene precio. */
+  costToBuy: number | null
 }
 
 /** Suma los ingredientes de todas las comidas planificadas de la semana. */
@@ -37,11 +43,16 @@ export function aggregateWeek(
   }
 
   const overrides = week.shopping.qtyOverrides ?? {}
+  const atHome = week.shopping.atHomeQty ?? {}
+  const legacyHome = new Set(week.shopping.haveAtHome)
+
   const lines: ShoppingLine[] = []
   for (const [ingredientId, computedQty] of totals) {
     const ing = ingredients.get(ingredientId)
     if (ing === undefined) continue
-    const qty = overrides[ingredientId] ?? computedQty
+    const neededQty = overrides[ingredientId] ?? computedQty
+    const atHomeQty = atHome[ingredientId] ?? (legacyHome.has(ingredientId) ? neededQty : 0)
+    const toBuyQty = Math.max(0, neededQty - atHomeQty)
     const perBase = pricePerBase(ing)
     lines.push({
       ingredientId,
@@ -49,8 +60,11 @@ export function aggregateWeek(
       category: ing.category,
       unit: ing.unit,
       computedQty,
-      qty,
-      cost: perBase === null ? null : perBase * qty,
+      neededQty,
+      atHomeQty,
+      toBuyQty,
+      costNeeded: perBase === null ? null : perBase * neededQty,
+      costToBuy: perBase === null ? null : perBase * toBuyQty,
     })
   }
   return lines.sort((a, b) => a.name.localeCompare(b.name, 'es'))
@@ -65,26 +79,28 @@ export function groupByCategory(lines: ShoppingLine[]): { category: Category; li
 }
 
 export interface ShoppingTotals {
-  /** Total estimado en € (sin líneas "ya lo tenemos"). */
-  total: number
-  /** Líneas contadas en el total que no tienen precio. */
+  /** Coste de todo lo que pide la semana, sin descontar la despensa. */
+  totalNeeded: number
+  /** Coste de lo que hay que comprar (necesario menos lo de casa). */
+  totalToBuy: number
+  /** Líneas pendientes de comprar que no tienen precio. */
   linesWithoutPrice: number
 }
 
-export function shoppingTotals(
-  lines: ShoppingLine[],
-  week: WeekPlan,
-): ShoppingTotals {
-  const haveAtHome = new Set(week.shopping.haveAtHome)
-  let total = 0
+export function shoppingTotals(lines: ShoppingLine[], week: WeekPlan): ShoppingTotals {
+  let totalNeeded = 0
+  let totalToBuy = 0
   let linesWithoutPrice = 0
   for (const line of lines) {
-    if (haveAtHome.has(line.ingredientId)) continue
-    if (line.cost === null) linesWithoutPrice += 1
-    else total += line.cost
+    if (line.costNeeded !== null) totalNeeded += line.costNeeded
+    if (line.costToBuy !== null) totalToBuy += line.costToBuy
+    if (line.costToBuy === null && line.toBuyQty > 0) linesWithoutPrice += 1
   }
   for (const extra of week.shopping.extras) {
-    if (extra.price !== undefined) total += extra.price
+    if (extra.price !== undefined) {
+      totalNeeded += extra.price
+      totalToBuy += extra.price
+    }
   }
-  return { total, linesWithoutPrice }
+  return { totalNeeded, totalToBuy, linesWithoutPrice }
 }

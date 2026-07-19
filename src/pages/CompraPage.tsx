@@ -20,6 +20,9 @@ function EmptyState({ title, hint }: { title: string; hint: string }) {
   )
 }
 
+const qtyInputCls =
+  'w-16 rounded border border-transparent px-1 py-0.5 text-right text-sm text-stone-600 hover:border-stone-200 focus:border-orange-400 focus:outline-none'
+
 export function CompraPage() {
   const { data, update } = useAppStore()
   const [extraName, setExtraName] = useState('')
@@ -58,22 +61,35 @@ export function CompraPage() {
     }))
   }
 
-  const toggleIn = (list: 'checked' | 'haveAtHome', key: string) => {
+  const toggleChecked = (key: string) => {
     updateShopping((s) => {
-      const set = new Set(s[list])
+      const set = new Set(s.checked)
       if (set.has(key)) set.delete(key)
       else set.add(key)
-      return { ...s, [list]: [...set] }
+      return { ...s, checked: [...set] }
     })
   }
 
-  const setOverride = (line: ShoppingLine, raw: string) => {
+  const setNeeded = (line: ShoppingLine, raw: string) => {
     const n = parseNum(raw)
     updateShopping((s) => {
       const overrides = { ...(s.qtyOverrides ?? {}) }
       if (n === null || n < 0 || n === line.computedQty) delete overrides[line.ingredientId]
       else overrides[line.ingredientId] = n
       return { ...s, qtyOverrides: overrides }
+    })
+  }
+
+  const setAtHome = (line: ShoppingLine, value: number) => {
+    updateShopping((s) => {
+      const atHomeQty = { ...(s.atHomeQty ?? {}) }
+      if (value <= 0) delete atHomeQty[line.ingredientId]
+      else atHomeQty[line.ingredientId] = value
+      return {
+        ...s,
+        atHomeQty,
+        haveAtHome: s.haveAtHome.filter((id) => id !== line.ingredientId),
+      }
     })
   }
 
@@ -102,10 +118,6 @@ export function CompraPage() {
   const groups = groupByCategory(lines)
   const totals = shoppingTotals(lines, week)
   const checked = new Set(week.shopping.checked)
-  const haveAtHome = new Set(week.shopping.haveAtHome)
-
-  const qtyLabel = (line: ShoppingLine) =>
-    line.unit === 'ud' ? 'ud' : line.unit
 
   return (
     <div>
@@ -132,73 +144,110 @@ export function CompraPage() {
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-stone-400">
                   {CATEGORY_LABELS[g.category]}
                 </h3>
-                <ul className="mt-2 divide-y divide-orange-50">
-                  {g.lines.map((line) => {
-                    const isChecked = checked.has(line.ingredientId)
-                    const isHome = haveAtHome.has(line.ingredientId)
-                    const overridden = line.qty !== line.computedQty
-                    return (
-                      <li
-                        key={line.ingredientId}
-                        className={`flex items-center gap-3 py-2 ${isHome ? 'opacity-50' : ''}`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => toggleIn('checked', line.ingredientId)}
-                          className="size-4 shrink-0 accent-orange-500"
-                        />
-                        <span
-                          className={`min-w-0 flex-1 truncate text-sm ${
-                            isChecked ? 'text-stone-400 line-through' : 'text-stone-700'
-                          }`}
-                        >
-                          {line.name}
-                        </span>
-                        <span className="flex shrink-0 items-center gap-1">
-                          <input
-                            key={`${line.ingredientId}-${line.qty}`}
-                            type="text"
-                            inputMode="decimal"
-                            defaultValue={fmtNum(line.qty, line.qty % 1 === 0 ? 0 : 1)}
-                            onBlur={(e) => setOverride(line, e.target.value)}
-                            className="w-16 rounded border border-transparent px-1 py-0.5 text-right text-sm text-stone-600 hover:border-stone-200 focus:border-orange-400 focus:outline-none"
-                          />
-                          <span className="w-6 text-xs text-stone-400">{qtyLabel(line)}</span>
-                          {overridden && (
+                <table className="mt-1 w-full text-sm">
+                  <thead>
+                    <tr className="text-[10px] uppercase tracking-wide text-stone-300">
+                      <th className="py-1 text-left font-semibold" colSpan={2}></th>
+                      <th className="py-1 text-right font-semibold">Necesario</th>
+                      <th className="py-1 text-right font-semibold">En casa</th>
+                      <th className="py-1 text-right font-semibold">A comprar</th>
+                      <th className="py-1 text-right font-semibold">Precio</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-orange-50">
+                    {g.lines.map((line) => {
+                      const isChecked = checked.has(line.ingredientId)
+                      const covered = line.toBuyQty <= 0
+                      const fullAtHome = line.atHomeQty >= line.neededQty && line.neededQty > 0
+                      return (
+                        <tr key={line.ingredientId} className={covered ? 'opacity-45' : ''}>
+                          <td className="w-6 py-2">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => toggleChecked(line.ingredientId)}
+                              className="size-4 accent-orange-500"
+                            />
+                          </td>
+                          <td
+                            className={`max-w-0 truncate py-2 pr-2 ${
+                              isChecked ? 'text-stone-400 line-through' : 'text-stone-700'
+                            }`}
+                          >
+                            {line.name}
+                          </td>
+                          <td className="py-2 text-right whitespace-nowrap">
+                            <input
+                              key={`n-${line.ingredientId}-${line.neededQty}`}
+                              type="text"
+                              inputMode="decimal"
+                              defaultValue={fmtNum(line.neededQty, line.neededQty % 1 === 0 ? 0 : 1)}
+                              onBlur={(e) => setNeeded(line, e.target.value)}
+                              className={qtyInputCls}
+                              title={
+                                line.neededQty !== line.computedQty
+                                  ? `Calculado por las recetas: ${fmtNum(line.computedQty, 1)}`
+                                  : undefined
+                              }
+                            />
+                            <span className="ml-0.5 text-xs text-stone-400">{line.unit}</span>
+                          </td>
+                          <td className="py-2 text-right whitespace-nowrap">
+                            <input
+                              key={`h-${line.ingredientId}-${line.atHomeQty}`}
+                              type="text"
+                              inputMode="decimal"
+                              defaultValue={
+                                line.atHomeQty === 0
+                                  ? ''
+                                  : fmtNum(line.atHomeQty, line.atHomeQty % 1 === 0 ? 0 : 1)
+                              }
+                              placeholder="0"
+                              onBlur={(e) => setAtHome(line, parseNum(e.target.value) ?? 0)}
+                              className={qtyInputCls}
+                            />
+                            <span className="ml-0.5 text-xs text-stone-400">{line.unit}</span>
+                          </td>
+                          <td className="py-2 text-right font-semibold whitespace-nowrap text-stone-700">
+                            {covered ? (
+                              <span className="font-normal text-stone-400">nada 🎉</span>
+                            ) : (
+                              `${fmtNum(line.toBuyQty, line.toBuyQty % 1 === 0 ? 0 : 1)} ${line.unit}`
+                            )}
+                          </td>
+                          <td className="w-16 py-2 text-right whitespace-nowrap text-stone-500">
+                            {covered ? (
+                              '—'
+                            ) : line.costToBuy === null ? (
+                              <span title="Sin precio en Ingredientes" className="cursor-help text-amber-500">
+                                sin €
+                              </span>
+                            ) : (
+                              fmtEuro(line.costToBuy)
+                            )}
+                          </td>
+                          <td className="w-8 py-2 text-right">
                             <button
                               type="button"
-                              onClick={() => setOverride(line, String(line.computedQty))}
-                              title={`Volver a la cantidad calculada (${fmtNum(line.computedQty, 1)})`}
-                              className="text-xs text-stone-400 hover:text-orange-600"
+                              onClick={() => setAtHome(line, fullAtHome ? 0 : line.neededQty)}
+                              title={
+                                fullAtHome
+                                  ? 'Quitar el descuento de despensa'
+                                  : 'Lo tengo todo en casa'
+                              }
+                              className={`rounded-lg px-1.5 py-0.5 text-sm ${
+                                fullAtHome ? 'bg-stone-200' : 'hover:bg-orange-100'
+                              }`}
                             >
-                              ↺
+                              🏠
                             </button>
-                          )}
-                        </span>
-                        <span className="w-16 shrink-0 text-right text-sm text-stone-500">
-                          {line.cost === null ? (
-                            <span title="Sin precio en Ingredientes" className="cursor-help text-amber-500">
-                              sin €
-                            </span>
-                          ) : (
-                            fmtEuro(line.cost)
-                          )}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => toggleIn('haveAtHome', line.ingredientId)}
-                          title={isHome ? 'Volver a incluir en la compra' : 'Ya lo tenemos en casa'}
-                          className={`shrink-0 rounded-lg px-1.5 py-0.5 text-sm ${
-                            isHome ? 'bg-stone-200' : 'hover:bg-orange-100'
-                          }`}
-                        >
-                          🏠
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ul>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
               </section>
             ))}
 
@@ -295,8 +344,14 @@ export function CompraPage() {
 
           <div>
             <div className="sticky top-20 rounded-2xl border border-orange-100 bg-white p-5 shadow-sm">
-              <h3 className="font-semibold text-stone-700">Total estimado</h3>
-              <p className="mt-1 text-3xl font-bold text-orange-600">{fmtEuro(totals.total)}</p>
+              <h3 className="font-semibold text-stone-700">Total a comprar</h3>
+              <p className="mt-1 text-3xl font-bold text-orange-600">{fmtEuro(totals.totalToBuy)}</p>
+              {totals.totalNeeded !== totals.totalToBuy && (
+                <p className="mt-1 text-xs text-stone-500">
+                  La semana necesita {fmtEuro(totals.totalNeeded)}; te ahorras{' '}
+                  {fmtEuro(totals.totalNeeded - totals.totalToBuy)} con lo que ya hay en casa.
+                </p>
+              )}
               {totals.linesWithoutPrice > 0 && (
                 <p className="mt-2 text-xs text-amber-700">
                   ⚠️{' '}
@@ -307,8 +362,8 @@ export function CompraPage() {
                 </p>
               )}
               <p className="mt-3 text-xs text-stone-400">
-                Las líneas marcadas con 🏠 (ya en casa) no cuentan en el total. Marca cada
-                producto al meterlo en el carro.
+                Todo lo que pide la semana cuenta; escribe en «En casa» lo que ya tengas y se
+                descuenta de lo que hay que comprar. El checkbox es para marcar en el súper.
               </p>
             </div>
           </div>

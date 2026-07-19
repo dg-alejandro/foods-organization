@@ -76,21 +76,24 @@ export function dayMacrosForPerson(
   return total
 }
 
-/** Media diaria de la semana contando solo los días con algo planificado. */
-export function weekAvgForPerson(
+/**
+ * Total semanal y media diaria de la semana,
+ * contando solo los días con algo planificado.
+ */
+export function weekMacrosForPerson(
   week: WeekPlan,
   personId: string,
   personCount: number,
   recipes: RecipeMap,
   ingredients: IngredientMap,
-): { avg: Macros; daysPlanned: number } {
+): { avg: Macros; total: Macros; daysPlanned: number } {
   const planned = week.days.filter(dayIsPlanned)
-  if (planned.length === 0) return { avg: ZERO_MACROS, daysPlanned: 0 }
+  if (planned.length === 0) return { avg: ZERO_MACROS, total: ZERO_MACROS, daysPlanned: 0 }
   let total = ZERO_MACROS
   for (const day of planned) {
     total = addMacros(total, dayMacrosForPerson(day, personId, personCount, recipes, ingredients))
   }
-  return { avg: scaleMacros(total, 1 / planned.length), daysPlanned: planned.length }
+  return { avg: scaleMacros(total, 1 / planned.length), total, daysPlanned: planned.length }
 }
 
 export type TargetStatus = 'ok' | 'warn' | 'bad' | 'none'
