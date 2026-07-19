@@ -1,9 +1,81 @@
+@import '@fontsource-variable/nunito-sans';
+@import '@fontsource-variable/fraunces';
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Nunito Sans Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Fraunces Variable', Georgia, serif;
+
+  /* Paleta terracota cálida (sustituye a la escala orange por defecto) */
+  --color-orange-50: #fbf7f0;
+  --color-orange-100: #f5ead8;
+  --color-orange-200: #ecd5b4;
+  --color-orange-300: #e0b285;
+  --color-orange-400: #d98d55;
+  --color-orange-500: #cd6f3d;
+  --color-orange-600: #b0521f;
+  --color-orange-700: #92411a;
+  --color-orange-800: #753418;
+  --color-orange-900: #5c2a16;
 }
 
 body {
   @apply bg-orange-50 text-stone-800 antialiased;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
+}
+
+/* Manchas de color difuminadas que flotan detrás del contenido */
+.bg-blob {
+  position: fixed;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: -1;
+  animation: blob-float 22s ease-in-out infinite alternate;
+}
+
+@keyframes blob-float {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(60px, -40px) scale(1.15);
+  }
+}
+
+/* Entrada suave del contenido al cambiar de pestaña */
+.animate-rise {
+  animation: rise 0.35s ease-out both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Las tarjetas blancas se elevan ligeramente al pasar el ratón */
+main .rounded-2xl.bg-white {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+main .rounded-2xl.bg-white:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px -10px rgb(92 42 22 / 0.22);
 }

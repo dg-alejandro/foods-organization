@@ -16,6 +16,7 @@ import {
 } from '../lib/planner'
 import type { TargetStatus } from '../lib/planner'
 import { fmtNum, parseNum } from '../lib/format'
+import { buildWeekExportHtml } from '../lib/exportHtml'
 import { Modal } from '../components/Modal'
 
 const STATUS_TEXT: Record<TargetStatus, string> = {
@@ -379,6 +380,23 @@ export function SemanaPage() {
           </span>
         )}
         <div className="ml-auto flex gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              const html = buildWeekExportHtml(data, week)
+              const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
+              const url = URL.createObjectURL(blob)
+              const a = document.createElement('a')
+              a.href = url
+              a.download = `semana-${week.weekStart}.html`
+              a.click()
+              URL.revokeObjectURL(url)
+            }}
+            className="rounded-lg border border-orange-300 px-3 py-2 text-sm font-medium text-orange-700 hover:bg-orange-50"
+            title="Descarga un HTML para consultar el plan desde el móvil"
+          >
+            📱 Exportar
+          </button>
           <button
             type="button"
             onClick={() => addWeek(duplicateWeek(week, nextWeekStart()))}
