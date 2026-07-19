@@ -112,6 +112,8 @@ export interface ShoppingState {
   /** Claves de línea marcadas como "ya lo tenemos en casa". */
   haveAtHome: string[]
   extras: ShoppingExtra[]
+  /** Cantidades ajustadas a mano por ingredientId (sustituyen a la calculada). */
+  qtyOverrides?: Record<string, number>
 }
 
 export interface WeekPlan {
