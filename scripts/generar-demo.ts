@@ -363,6 +363,6 @@ const data: AppData = {
   seeded: true,
 }
 
-const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'demo-semana.json')
+const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'demo-semana.json')
 writeFileSync(out, JSON.stringify(data, null, 2), 'utf8')
 console.log(`Escrito ${out} (${data.recipes.length} recetas, ${data.ingredients.length} ingredientes)`)

@@ -65,6 +65,52 @@ function PersonCard({ person }: { person: Person }) {
   )
 }
 
+function DemoCard() {
+  const { replaceAll } = useAppStore()
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null)
+
+  const handleLoad = async () => {
+    try {
+      const resp = await fetch('/demo-semana.json')
+      if (!resp.ok) throw new Error('No se encontró el archivo de ejemplo.')
+      const imported = importBackup(await resp.text())
+      const ok = window.confirm(
+        'Esto sustituirá TODOS los datos actuales (personas, ingredientes, recetas y semanas) por la semana de ejemplo. ¿Continuar?',
+      )
+      if (!ok) return
+      replaceAll(imported)
+      setMessage({ kind: 'ok', text: 'Semana de ejemplo cargada. Echa un vistazo a las pestañas Semana y Compra.' })
+    } catch (err) {
+      const text = err instanceof Error ? err.message : 'No se pudo cargar el ejemplo.'
+      setMessage({ kind: 'error', text })
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm">
+      <h3 className="font-semibold text-stone-700">Semana de ejemplo</h3>
+      <p className="mt-1 text-sm text-stone-500">
+        Carga una semana completa de demostración: 14 recetas, precios orientativos y el plan del
+        3 al 9 de agosto. Útil para ver la app llena antes de meter vuestros datos.
+      </p>
+      <div className="mt-4">
+        <button
+          type="button"
+          onClick={() => void handleLoad()}
+          className="rounded-lg border border-orange-300 px-4 py-2 text-sm font-medium text-orange-700 hover:bg-orange-50"
+        >
+          Cargar semana de ejemplo
+        </button>
+      </div>
+      {message !== null && (
+        <p className={`mt-3 text-sm ${message.kind === 'ok' ? 'text-green-700' : 'text-red-600'}`}>
+          {message.text}
+        </p>
+      )}
+    </div>
+  )
+}
+
 function BackupCard() {
   const { data, replaceAll } = useAppStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -161,8 +207,9 @@ export function AjustesPage() {
 
       <section>
         <h2 className="text-xl font-bold text-stone-800">Datos</h2>
-        <div className="mt-4">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <BackupCard />
+          <DemoCard />
         </div>
       </section>
     </div>
