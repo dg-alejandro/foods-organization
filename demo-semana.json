@@ -1,0 +1,1501 @@
+{
+  "version": 1,
+  "persons": [
+    {
+      "id": "7b201143-cded-4b29-ba02-a3729af8c310",
+      "name": "Alejandro",
+      "targets": {
+        "kcal": 2200,
+        "protein": 130,
+        "carbs": 240,
+        "fat": 70
+      }
+    },
+    {
+      "id": "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4",
+      "name": "Persona 2",
+      "targets": {
+        "kcal": 1800,
+        "protein": 100,
+        "carbs": 190,
+        "fat": 60
+      }
+    }
+  ],
+  "ingredients": [
+    {
+      "name": "Plátano",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 89,
+      "protein100": 1.1,
+      "carbs100": 23,
+      "fat100": 0.3,
+      "id": "b6c3542d-db65-473e-bdd0-8b5a02ceefe8",
+      "packPrice": 2.29,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Manzana",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 52,
+      "protein100": 0.3,
+      "carbs100": 14,
+      "fat100": 0.2,
+      "id": "22832183-6452-41c0-85b4-98829941e0fa"
+    },
+    {
+      "name": "Naranja",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 47,
+      "protein100": 0.9,
+      "carbs100": 12,
+      "fat100": 0.1,
+      "id": "c7e2dd84-5dbf-4cc7-81b7-68643f98f612"
+    },
+    {
+      "name": "Fresas",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 32,
+      "protein100": 0.7,
+      "carbs100": 7.7,
+      "fat100": 0.3,
+      "id": "392a7527-3f79-449c-9647-016ea296cb1d",
+      "packPrice": 2.2,
+      "packSize": 500,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Aguacate",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 160,
+      "protein100": 2,
+      "carbs100": 8.5,
+      "fat100": 14.7,
+      "id": "f7f0ba24-c4bc-4be5-ba85-c6c4ed279db9",
+      "packPrice": 2.5,
+      "packSize": 500,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Tomate",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 18,
+      "protein100": 0.9,
+      "carbs100": 3.9,
+      "fat100": 0.2,
+      "id": "a0159691-34b7-48ea-905a-d8e9d5ee235a",
+      "packPrice": 1.95,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Cebolla",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 40,
+      "protein100": 1.1,
+      "carbs100": 9.3,
+      "fat100": 0.1,
+      "id": "6f0ac191-0705-4916-9883-41cc1a110a58",
+      "packPrice": 1.5,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Ajo",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 149,
+      "protein100": 6.4,
+      "carbs100": 33,
+      "fat100": 0.5,
+      "id": "d92079dd-e08f-4c92-b203-160f8a9d78a3",
+      "packPrice": 1.2,
+      "packSize": 250,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Pimiento rojo",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 31,
+      "protein100": 1,
+      "carbs100": 6,
+      "fat100": 0.3,
+      "id": "fbd29045-a2ce-4f45-a36a-4fab7d5648b3",
+      "packPrice": 2.2,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Calabacín",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 17,
+      "protein100": 1.2,
+      "carbs100": 3.1,
+      "fat100": 0.3,
+      "id": "e48d1251-6eb8-418a-9f26-8c14794f835c",
+      "packPrice": 1.45,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Zanahoria",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 41,
+      "protein100": 0.9,
+      "carbs100": 9.6,
+      "fat100": 0.2,
+      "id": "7926bee4-4a50-49c2-b3e7-5c51a17f2ac7",
+      "packPrice": 0.95,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Patata",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 77,
+      "protein100": 2,
+      "carbs100": 17,
+      "fat100": 0.1,
+      "id": "f65b2b84-07ba-46db-b565-eeecbafad31c",
+      "packPrice": 2.7,
+      "packSize": 3000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Lechuga",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 15,
+      "protein100": 1.4,
+      "carbs100": 2.9,
+      "fat100": 0.2,
+      "id": "15863531-1df6-42e6-8446-79aa3df4c4db",
+      "packPrice": 1.1,
+      "packSize": 500,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Espinacas",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 23,
+      "protein100": 2.9,
+      "carbs100": 3.6,
+      "fat100": 0.4,
+      "id": "d4ed3349-c4ac-46f9-b229-6097d3c33beb",
+      "packPrice": 1.3,
+      "packSize": 300,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Brócoli",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 34,
+      "protein100": 2.8,
+      "carbs100": 6.6,
+      "fat100": 0.4,
+      "id": "392ab877-6dbb-4aaf-99de-56e143b99ba3",
+      "packPrice": 1.85,
+      "packSize": 500,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Limón",
+      "category": "fruteria",
+      "unit": "g",
+      "kcal100": 29,
+      "protein100": 1.1,
+      "carbs100": 9.3,
+      "fat100": 0.3,
+      "id": "9ffcc144-06e8-4bdd-812a-5a34180c5252",
+      "packPrice": 1.6,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Pechuga de pollo",
+      "category": "carniceria",
+      "unit": "g",
+      "kcal100": 110,
+      "protein100": 23,
+      "carbs100": 0,
+      "fat100": 1.5,
+      "id": "cd639686-7243-4cad-972a-417f34f5b686",
+      "packPrice": 5.95,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Muslo de pollo",
+      "category": "carniceria",
+      "unit": "g",
+      "kcal100": 175,
+      "protein100": 18,
+      "carbs100": 0,
+      "fat100": 11,
+      "id": "74d7e1a9-0e3d-4e1c-9e22-a73ef59c7e2f",
+      "packPrice": 3.2,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Ternera magra",
+      "category": "carniceria",
+      "unit": "g",
+      "kcal100": 131,
+      "protein100": 21,
+      "carbs100": 0,
+      "fat100": 5,
+      "id": "a992f109-40f1-44b6-a4d1-2ed950a522ab",
+      "packPrice": 9.5,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Lomo de cerdo",
+      "category": "carniceria",
+      "unit": "g",
+      "kcal100": 143,
+      "protein100": 21,
+      "carbs100": 0,
+      "fat100": 6.2,
+      "id": "6f33b956-e03d-444b-b415-f6eb982706c4"
+    },
+    {
+      "name": "Carne picada mixta",
+      "category": "carniceria",
+      "unit": "g",
+      "kcal100": 220,
+      "protein100": 18,
+      "carbs100": 0,
+      "fat100": 16,
+      "id": "e8a14f90-24f0-4508-8fa7-d3084cf0b1db"
+    },
+    {
+      "name": "Pechuga de pavo",
+      "category": "carniceria",
+      "unit": "g",
+      "kcal100": 105,
+      "protein100": 24,
+      "carbs100": 0,
+      "fat100": 1,
+      "id": "8d9ecf85-eac6-4c73-8db3-d91b3ca228eb"
+    },
+    {
+      "name": "Jamón serrano",
+      "category": "carniceria",
+      "unit": "g",
+      "kcal100": 241,
+      "protein100": 31,
+      "carbs100": 0.1,
+      "fat100": 13,
+      "id": "0245970a-2ce4-407e-82f8-a4d044ceafcd"
+    },
+    {
+      "name": "Jamón cocido",
+      "category": "carniceria",
+      "unit": "g",
+      "kcal100": 110,
+      "protein100": 18,
+      "carbs100": 1.5,
+      "fat100": 3.5,
+      "id": "b97fcc32-4026-4ace-a80c-2bb745c5590e"
+    },
+    {
+      "name": "Merluza",
+      "category": "pescaderia",
+      "unit": "g",
+      "kcal100": 72,
+      "protein100": 15.9,
+      "carbs100": 0,
+      "fat100": 0.9,
+      "id": "e0cac024-16cb-4c7b-a562-6aec7a02ad06",
+      "packPrice": 8.9,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Salmón",
+      "category": "pescaderia",
+      "unit": "g",
+      "kcal100": 208,
+      "protein100": 20,
+      "carbs100": 0,
+      "fat100": 13,
+      "id": "5f92038c-ed49-4e39-a909-cc0c8bdbe427",
+      "packPrice": 11.5,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Atún fresco",
+      "category": "pescaderia",
+      "unit": "g",
+      "kcal100": 130,
+      "protein100": 28,
+      "carbs100": 0,
+      "fat100": 1.3,
+      "id": "64807abf-ec40-4ca5-8e07-0d9bc5728b0c"
+    },
+    {
+      "name": "Gambas",
+      "category": "pescaderia",
+      "unit": "g",
+      "kcal100": 85,
+      "protein100": 20,
+      "carbs100": 0.2,
+      "fat100": 0.5,
+      "id": "b8df299a-c343-4aef-8dd6-a87c3bc4ab25"
+    },
+    {
+      "name": "Dorada",
+      "category": "pescaderia",
+      "unit": "g",
+      "kcal100": 96,
+      "protein100": 19.8,
+      "carbs100": 0,
+      "fat100": 1.8,
+      "id": "9a1699f8-8dd3-4943-8f5a-2e96587851f9",
+      "packPrice": 7.5,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Leche semidesnatada",
+      "category": "lacteos",
+      "unit": "ml",
+      "kcal100": 46,
+      "protein100": 3.1,
+      "carbs100": 4.7,
+      "fat100": 1.6,
+      "id": "d82ca972-f6e3-406b-aa5d-de9e68866d60",
+      "packPrice": 0.98,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Huevo",
+      "category": "lacteos",
+      "unit": "ud",
+      "kcal100": 70,
+      "protein100": 6.3,
+      "carbs100": 0.4,
+      "fat100": 4.8,
+      "id": "66198e4f-9ec7-4056-a43c-32a0c0c71601",
+      "packPrice": 2.5,
+      "packSize": 12,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Yogur natural",
+      "category": "lacteos",
+      "unit": "ud",
+      "kcal100": 57,
+      "protein100": 4.1,
+      "carbs100": 5.5,
+      "fat100": 2,
+      "id": "8cc59a21-c88d-4ddd-a221-e100df9bb764",
+      "packPrice": 1.8,
+      "packSize": 8,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Queso fresco batido 0%",
+      "category": "lacteos",
+      "unit": "g",
+      "kcal100": 47,
+      "protein100": 8,
+      "carbs100": 4,
+      "fat100": 0.2,
+      "id": "501ca90e-9ce3-4eee-b323-1e3e052a5f97"
+    },
+    {
+      "name": "Queso curado",
+      "category": "lacteos",
+      "unit": "g",
+      "kcal100": 402,
+      "protein100": 25,
+      "carbs100": 1.3,
+      "fat100": 33,
+      "id": "4f99abf2-1b28-406d-9ded-4410ac386e96"
+    },
+    {
+      "name": "Mantequilla",
+      "category": "lacteos",
+      "unit": "g",
+      "kcal100": 717,
+      "protein100": 0.9,
+      "carbs100": 0.1,
+      "fat100": 81,
+      "id": "01feda38-3ff9-4fe1-9ed8-fd96fb315ebb"
+    },
+    {
+      "name": "Nata para cocinar",
+      "category": "lacteos",
+      "unit": "ml",
+      "kcal100": 189,
+      "protein100": 2.5,
+      "carbs100": 3.8,
+      "fat100": 18,
+      "id": "84c7ea39-30a6-4831-b95e-9a1274d285f2"
+    },
+    {
+      "name": "Arroz",
+      "category": "despensa",
+      "unit": "g",
+      "kcal100": 360,
+      "protein100": 7,
+      "carbs100": 79,
+      "fat100": 0.9,
+      "id": "5a0b0e3f-b7ea-43f6-b430-f8571b65d189",
+      "packPrice": 1.15,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Pasta",
+      "category": "despensa",
+      "unit": "g",
+      "kcal100": 371,
+      "protein100": 13,
+      "carbs100": 74,
+      "fat100": 1.5,
+      "id": "bf5beb60-512d-49d0-939c-3d87a54a9b05",
+      "packPrice": 1.05,
+      "packSize": 500,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Lentejas secas",
+      "category": "despensa",
+      "unit": "g",
+      "kcal100": 352,
+      "protein100": 24.6,
+      "carbs100": 60,
+      "fat100": 1.1,
+      "id": "74b391cc-0890-4e74-b95a-cb1bc573bca8",
+      "packPrice": 1.89,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Garbanzos cocidos (bote)",
+      "category": "despensa",
+      "unit": "g",
+      "kcal100": 139,
+      "protein100": 7.7,
+      "carbs100": 20,
+      "fat100": 2.6,
+      "id": "dc224e6f-5950-405f-93b5-9eb8e5146bbd",
+      "packPrice": 0.7,
+      "packSize": 400,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Atún en lata (escurrido)",
+      "category": "despensa",
+      "unit": "g",
+      "kcal100": 190,
+      "protein100": 26,
+      "carbs100": 0,
+      "fat100": 9,
+      "id": "066fb6fd-ea7d-4593-80fb-0d22a0a866f8",
+      "packPrice": 2.5,
+      "packSize": 156,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Tomate frito",
+      "category": "despensa",
+      "unit": "g",
+      "kcal100": 78,
+      "protein100": 1.5,
+      "carbs100": 8.5,
+      "fat100": 4.2,
+      "id": "a4d3cff2-de58-4b87-8d56-c12dcf917208",
+      "packPrice": 0.85,
+      "packSize": 400,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Aceite de oliva virgen extra",
+      "category": "despensa",
+      "unit": "ml",
+      "kcal100": 884,
+      "protein100": 0,
+      "carbs100": 0,
+      "fat100": 100,
+      "id": "30e2190b-5e5b-4341-b0c4-f03148f1d623",
+      "packPrice": 7.5,
+      "packSize": 1000,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Harina de trigo",
+      "category": "despensa",
+      "unit": "g",
+      "kcal100": 364,
+      "protein100": 10,
+      "carbs100": 76,
+      "fat100": 1,
+      "id": "bb90f631-e7d2-42b0-adb4-058b766ceb46"
+    },
+    {
+      "name": "Azúcar",
+      "category": "despensa",
+      "unit": "g",
+      "kcal100": 387,
+      "protein100": 0,
+      "carbs100": 100,
+      "fat100": 0,
+      "id": "d8bde92a-14bd-4405-86fa-1cfa5bc6b9c8"
+    },
+    {
+      "name": "Copos de avena",
+      "category": "despensa",
+      "unit": "g",
+      "kcal100": 389,
+      "protein100": 16.9,
+      "carbs100": 66,
+      "fat100": 6.9,
+      "id": "94f9f52d-4ae9-4b17-a8f7-35f163e916d1",
+      "packPrice": 1.1,
+      "packSize": 500,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Chocolate negro 85%",
+      "category": "despensa",
+      "unit": "g",
+      "kcal100": 584,
+      "protein100": 9.8,
+      "carbs100": 22.9,
+      "fat100": 46.4,
+      "id": "1a91de2d-aae1-4c5c-bb3b-f7922f1fb326"
+    },
+    {
+      "name": "Nueces",
+      "category": "despensa",
+      "unit": "g",
+      "kcal100": 654,
+      "protein100": 15.2,
+      "carbs100": 13.7,
+      "fat100": 65.2,
+      "id": "aad2e533-0cc1-4f32-9d6b-e479ad28fefc",
+      "packPrice": 2.2,
+      "packSize": 200,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Miel",
+      "category": "despensa",
+      "unit": "g",
+      "kcal100": 304,
+      "protein100": 0.3,
+      "carbs100": 82,
+      "fat100": 0,
+      "id": "186eab88-d77c-4630-8c0c-0d2e6b3db610",
+      "packPrice": 3.5,
+      "packSize": 500,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Pan de barra",
+      "category": "panaderia",
+      "unit": "g",
+      "kcal100": 265,
+      "protein100": 8,
+      "carbs100": 52,
+      "fat100": 1.6,
+      "id": "255e30d7-ac48-40cb-866e-608e52ba9758",
+      "packPrice": 0.55,
+      "packSize": 250,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Pan de molde integral",
+      "category": "panaderia",
+      "unit": "g",
+      "kcal100": 244,
+      "protein100": 11,
+      "carbs100": 41,
+      "fat100": 3.5,
+      "id": "080a7f8a-688f-457b-9141-3bb35ba77cef",
+      "packPrice": 1.55,
+      "packSize": 460,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Guisantes congelados",
+      "category": "congelados",
+      "unit": "g",
+      "kcal100": 81,
+      "protein100": 5.4,
+      "carbs100": 14,
+      "fat100": 0.4,
+      "id": "7f05e7e9-64d7-4173-8652-f8feb4c90518"
+    },
+    {
+      "name": "Salteado de verduras congelado",
+      "category": "congelados",
+      "unit": "g",
+      "kcal100": 45,
+      "protein100": 2.1,
+      "carbs100": 7.5,
+      "fat100": 0.7,
+      "id": "3b817602-876c-4575-8d7c-75ab7857a360",
+      "packPrice": 1.8,
+      "packSize": 750,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Cerveza",
+      "category": "bebidas",
+      "unit": "ml",
+      "kcal100": 43,
+      "protein100": 0.5,
+      "carbs100": 3.6,
+      "fat100": 0,
+      "id": "fbec87bc-5489-410d-873d-8c3e6f234838"
+    },
+    {
+      "name": "Vino tinto",
+      "category": "bebidas",
+      "unit": "ml",
+      "kcal100": 85,
+      "protein100": 0.1,
+      "carbs100": 2.6,
+      "fat100": 0,
+      "id": "0e057f18-68d2-4f2b-aadb-845fc8e75b5f"
+    },
+    {
+      "name": "Tofu",
+      "category": "otros",
+      "unit": "g",
+      "kcal100": 76,
+      "protein100": 8,
+      "carbs100": 1.9,
+      "fat100": 4.8,
+      "id": "43dd81cd-05a1-4d83-a60a-5397a433a9e5",
+      "packPrice": 1.85,
+      "packSize": 250,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    },
+    {
+      "name": "Hummus",
+      "category": "otros",
+      "unit": "g",
+      "kcal100": 166,
+      "protein100": 7.9,
+      "carbs100": 14.3,
+      "fat100": 9.6,
+      "id": "0c614673-3459-4cfa-9036-a8ebf29501ff",
+      "packPrice": 1.45,
+      "packSize": 240,
+      "priceUpdatedAt": "2026-07-19T23:04:41.180Z"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "8cfbdab7-a6c7-40b5-8272-0396166e9c0d",
+      "name": "Arroz con pollo",
+      "mealType": "almuerzo",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "cd639686-7243-4cad-972a-417f34f5b686",
+          "qty": 300,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "5a0b0e3f-b7ea-43f6-b430-f8571b65d189",
+          "qty": 200,
+          "unit": "g"
+        }
+      ]
+    },
+    {
+      "id": "d3d90375-07f8-4374-98bc-bdb256ba1351",
+      "name": "Avena con plátano y nueces",
+      "mealType": "desayuno",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "94f9f52d-4ae9-4b17-a8f7-35f163e916d1",
+          "qty": 80,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "d82ca972-f6e3-406b-aa5d-de9e68866d60",
+          "qty": 400,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "b6c3542d-db65-473e-bdd0-8b5a02ceefe8",
+          "qty": 200,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "aad2e533-0cc1-4f32-9d6b-e479ad28fefc",
+          "qty": 30,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "186eab88-d77c-4630-8c0c-0d2e6b3db610",
+          "qty": 20,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Calentar la leche y cocer la avena 5 min.",
+        "Servir con el plátano, las nueces y la miel."
+      ],
+      "tags": [
+        "rápida"
+      ]
+    },
+    {
+      "id": "6fc08f30-a8f0-4041-b2e0-1fac58cc3f13",
+      "name": "Tostadas de aguacate con huevo",
+      "mealType": "desayuno",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "080a7f8a-688f-457b-9141-3bb35ba77cef",
+          "qty": 120,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "f7f0ba24-c4bc-4be5-ba85-c6c4ed279db9",
+          "qty": 200,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "66198e4f-9ec7-4056-a43c-32a0c0c71601",
+          "qty": 2,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "30e2190b-5e5b-4341-b0c4-f03148f1d623",
+          "qty": 10,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Tostar el pan.",
+        "Machacar el aguacate y repartirlo.",
+        "Huevos a la plancha y montar."
+      ],
+      "tags": [
+        "rápida"
+      ]
+    },
+    {
+      "id": "48d7b768-0166-4bc8-9631-3f5d63d7471d",
+      "name": "Yogur con fresas y avena",
+      "mealType": "desayuno",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "8cc59a21-c88d-4ddd-a221-e100df9bb764",
+          "qty": 2,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "392a7527-3f79-449c-9647-016ea296cb1d",
+          "qty": 250,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "94f9f52d-4ae9-4b17-a8f7-35f163e916d1",
+          "qty": 40,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "186eab88-d77c-4630-8c0c-0d2e6b3db610",
+          "qty": 15,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Trocear las fresas.",
+        "Mezclar todo en un bol."
+      ],
+      "tags": [
+        "rápida",
+        "sin cocinar"
+      ]
+    },
+    {
+      "id": "d8edd250-e484-4189-9f0b-549a85c2a96d",
+      "name": "Pollo al horno con patatas",
+      "mealType": "almuerzo",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "74d7e1a9-0e3d-4e1c-9e22-a73ef59c7e2f",
+          "qty": 500,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "f65b2b84-07ba-46db-b565-eeecbafad31c",
+          "qty": 500,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "6f0ac191-0705-4916-9883-41cc1a110a58",
+          "qty": 150,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "d92079dd-e08f-4c92-b203-160f8a9d78a3",
+          "qty": 10,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "30e2190b-5e5b-4341-b0c4-f03148f1d623",
+          "qty": 30,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Precalentar el horno a 200 °C.",
+        "Cortar patata y cebolla, salpimentar todo.",
+        "Hornear 45-50 min dándole la vuelta a mitad."
+      ],
+      "tags": [
+        "horno"
+      ]
+    },
+    {
+      "id": "830590a1-023e-405b-8628-4bb950b5acda",
+      "name": "Lentejas estofadas",
+      "mealType": "almuerzo",
+      "servings": 4,
+      "items": [
+        {
+          "ingredientId": "74b391cc-0890-4e74-b95a-cb1bc573bca8",
+          "qty": 300,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "f65b2b84-07ba-46db-b565-eeecbafad31c",
+          "qty": 300,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "7926bee4-4a50-49c2-b3e7-5c51a17f2ac7",
+          "qty": 200,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "6f0ac191-0705-4916-9883-41cc1a110a58",
+          "qty": 150,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "fbd29045-a2ce-4f45-a36a-4fab7d5648b3",
+          "qty": 150,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "d92079dd-e08f-4c92-b203-160f8a9d78a3",
+          "qty": 10,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "a4d3cff2-de58-4b87-8d56-c12dcf917208",
+          "qty": 100,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "30e2190b-5e5b-4341-b0c4-f03148f1d623",
+          "qty": 30,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Sofreír la verdura picada.",
+        "Añadir lentejas y cubrir con agua.",
+        "Cocer 35-40 min."
+      ],
+      "tags": [
+        "batch",
+        "tupper"
+      ]
+    },
+    {
+      "id": "ab2b163a-b56f-440a-a4ff-d21fc93c25f7",
+      "name": "Pasta con atún y tomate",
+      "mealType": "almuerzo",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "bf5beb60-512d-49d0-939c-3d87a54a9b05",
+          "qty": 200,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "066fb6fd-ea7d-4593-80fb-0d22a0a866f8",
+          "qty": 120,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "a4d3cff2-de58-4b87-8d56-c12dcf917208",
+          "qty": 200,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "6f0ac191-0705-4916-9883-41cc1a110a58",
+          "qty": 100,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "30e2190b-5e5b-4341-b0c4-f03148f1d623",
+          "qty": 20,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Cocer la pasta.",
+        "Sofreír cebolla, añadir tomate y atún.",
+        "Mezclar y servir."
+      ],
+      "tags": [
+        "rápida"
+      ]
+    },
+    {
+      "id": "391723f6-b467-46d6-9a8e-4e53f2e7a001",
+      "name": "Salteado de ternera con arroz",
+      "mealType": "almuerzo",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "a992f109-40f1-44b6-a4d1-2ed950a522ab",
+          "qty": 300,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "3b817602-876c-4575-8d7c-75ab7857a360",
+          "qty": 400,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "5a0b0e3f-b7ea-43f6-b430-f8571b65d189",
+          "qty": 180,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "30e2190b-5e5b-4341-b0c4-f03148f1d623",
+          "qty": 20,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Cocer el arroz.",
+        "Saltear la ternera, añadir la verdura.",
+        "Servir sobre el arroz."
+      ],
+      "tags": [
+        "rápida"
+      ]
+    },
+    {
+      "id": "f4641bb0-96f2-4e11-99a0-3807ab209334",
+      "name": "Merluza a la plancha con brócoli",
+      "mealType": "cena",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "e0cac024-16cb-4c7b-a562-6aec7a02ad06",
+          "qty": 400,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "392ab877-6dbb-4aaf-99de-56e143b99ba3",
+          "qty": 400,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "f65b2b84-07ba-46db-b565-eeecbafad31c",
+          "qty": 300,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "30e2190b-5e5b-4341-b0c4-f03148f1d623",
+          "qty": 25,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "9ffcc144-06e8-4bdd-812a-5a34180c5252",
+          "qty": 50,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Cocer patata y brócoli al vapor.",
+        "Merluza a la plancha 3 min por lado.",
+        "Aliñar."
+      ],
+      "tags": [
+        "ligera"
+      ]
+    },
+    {
+      "id": "9ed433a1-4097-456e-8da2-c0b446feef98",
+      "name": "Tortilla de patatas con ensalada",
+      "mealType": "cena",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "66198e4f-9ec7-4056-a43c-32a0c0c71601",
+          "qty": 6,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "f65b2b84-07ba-46db-b565-eeecbafad31c",
+          "qty": 500,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "6f0ac191-0705-4916-9883-41cc1a110a58",
+          "qty": 150,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "30e2190b-5e5b-4341-b0c4-f03148f1d623",
+          "qty": 40,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "15863531-1df6-42e6-8446-79aa3df4c4db",
+          "qty": 150,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "a0159691-34b7-48ea-905a-d8e9d5ee235a",
+          "qty": 200,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Pochar patata y cebolla.",
+        "Cuajar la tortilla.",
+        "Acompañar con ensalada."
+      ],
+      "tags": [
+        "clásica"
+      ]
+    },
+    {
+      "id": "c552338d-9eef-4160-8560-91d8f3f2f706",
+      "name": "Salmón con espinacas salteadas",
+      "mealType": "cena",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "5f92038c-ed49-4e39-a909-cc0c8bdbe427",
+          "qty": 350,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "d4ed3349-c4ac-46f9-b229-6097d3c33beb",
+          "qty": 300,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "d92079dd-e08f-4c92-b203-160f8a9d78a3",
+          "qty": 5,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "30e2190b-5e5b-4341-b0c4-f03148f1d623",
+          "qty": 20,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Salmón a la plancha 4 min por lado.",
+        "Saltear las espinacas con ajo."
+      ],
+      "tags": [
+        "ligera",
+        "rápida"
+      ]
+    },
+    {
+      "id": "af9de738-d45f-49e0-aa44-2ec36c761582",
+      "name": "Ensalada de garbanzos con tofu",
+      "mealType": "cena",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "dc224e6f-5950-405f-93b5-9eb8e5146bbd",
+          "qty": 400,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "43dd81cd-05a1-4d83-a60a-5397a433a9e5",
+          "qty": 200,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "a0159691-34b7-48ea-905a-d8e9d5ee235a",
+          "qty": 200,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "fbd29045-a2ce-4f45-a36a-4fab7d5648b3",
+          "qty": 100,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "30e2190b-5e5b-4341-b0c4-f03148f1d623",
+          "qty": 20,
+          "unit": "ml"
+        }
+      ],
+      "steps": [
+        "Dorar el tofu en dados.",
+        "Mezclar todo y aliñar."
+      ],
+      "tags": [
+        "sin cocinar",
+        "veggie"
+      ]
+    },
+    {
+      "id": "e5a2997a-2e32-42f8-9844-9ef8e9305c03",
+      "name": "Dorada al horno con calabacín",
+      "mealType": "cena",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "9a1699f8-8dd3-4943-8f5a-2e96587851f9",
+          "qty": 500,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "e48d1251-6eb8-418a-9f26-8c14794f835c",
+          "qty": 400,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "f65b2b84-07ba-46db-b565-eeecbafad31c",
+          "qty": 300,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "30e2190b-5e5b-4341-b0c4-f03148f1d623",
+          "qty": 25,
+          "unit": "ml"
+        },
+        {
+          "ingredientId": "9ffcc144-06e8-4bdd-812a-5a34180c5252",
+          "qty": 50,
+          "unit": "g"
+        }
+      ],
+      "steps": [
+        "Horno a 190 °C.",
+        "Cama de patata y calabacín, la dorada encima.",
+        "Hornear 25 min."
+      ],
+      "tags": [
+        "horno"
+      ]
+    },
+    {
+      "id": "75bd9515-9208-4d34-8ad8-ec2f0704a240",
+      "name": "Yogur con nueces y miel",
+      "mealType": "snack",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "8cc59a21-c88d-4ddd-a221-e100df9bb764",
+          "qty": 2,
+          "unit": "ud"
+        },
+        {
+          "ingredientId": "aad2e533-0cc1-4f32-9d6b-e479ad28fefc",
+          "qty": 20,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "186eab88-d77c-4630-8c0c-0d2e6b3db610",
+          "qty": 15,
+          "unit": "g"
+        }
+      ],
+      "tags": [
+        "rápida"
+      ]
+    },
+    {
+      "id": "66dfc07d-2735-4ff8-ae58-f4c825b6f79e",
+      "name": "Tosta de hummus",
+      "mealType": "snack",
+      "servings": 2,
+      "items": [
+        {
+          "ingredientId": "255e30d7-ac48-40cb-866e-608e52ba9758",
+          "qty": 100,
+          "unit": "g"
+        },
+        {
+          "ingredientId": "0c614673-3459-4cfa-9036-a8ebf29501ff",
+          "qty": 100,
+          "unit": "g"
+        }
+      ],
+      "tags": [
+        "rápida"
+      ]
+    }
+  ],
+  "weeks": [
+    {
+      "id": "31c14759-ab04-4bf5-9dfc-70526a6aeed8",
+      "weekStart": "2026-08-03",
+      "days": [
+        {
+          "desayuno": {
+            "recipeId": "d3d90375-07f8-4374-98bc-bdb256ba1351",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "almuerzo": {
+            "recipeId": "830590a1-023e-405b-8628-4bb950b5acda",
+            "servings": 2.5,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1.5,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "cena": {
+            "recipeId": "f4641bb0-96f2-4e11-99a0-3807ab209334",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "snacks": [
+            {
+              "recipeId": "75bd9515-9208-4d34-8ad8-ec2f0704a240",
+              "servings": 2,
+              "perPerson": {
+                "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+                "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+              }
+            }
+          ],
+          "note": "entreno por la tarde"
+        },
+        {
+          "desayuno": {
+            "recipeId": "6fc08f30-a8f0-4041-b2e0-1fac58cc3f13",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "almuerzo": {
+            "recipeId": "ab2b163a-b56f-440a-a4ff-d21fc93c25f7",
+            "servings": 2.5,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1.5,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "cena": {
+            "recipeId": "c552338d-9eef-4160-8560-91d8f3f2f706",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          }
+        },
+        {
+          "desayuno": {
+            "recipeId": "d3d90375-07f8-4374-98bc-bdb256ba1351",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "almuerzo": {
+            "recipeId": "d8edd250-e484-4189-9f0b-549a85c2a96d",
+            "servings": 2.5,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1.5,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "cena": {
+            "recipeId": "9ed433a1-4097-456e-8da2-c0b446feef98",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "snacks": [
+            {
+              "recipeId": "66dfc07d-2735-4ff8-ae58-f4c825b6f79e",
+              "servings": 2,
+              "perPerson": {
+                "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+                "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+              }
+            }
+          ]
+        },
+        {
+          "desayuno": {
+            "recipeId": "48d7b768-0166-4bc8-9631-3f5d63d7471d",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "almuerzo": {
+            "recipeId": "830590a1-023e-405b-8628-4bb950b5acda",
+            "servings": 2.5,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1.5,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "cena": {
+            "recipeId": "e5a2997a-2e32-42f8-9844-9ef8e9305c03",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "note": "las lentejas ya están hechas del lunes"
+        },
+        {
+          "desayuno": {
+            "recipeId": "6fc08f30-a8f0-4041-b2e0-1fac58cc3f13",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "almuerzo": {
+            "recipeId": "391723f6-b467-46d6-9a8e-4e53f2e7a001",
+            "servings": 2.5,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1.5,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "cena": {
+            "recipeId": "af9de738-d45f-49e0-aa44-2ec36c761582",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          }
+        },
+        {
+          "desayuno": {
+            "recipeId": "48d7b768-0166-4bc8-9631-3f5d63d7471d",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "almuerzo": {
+            "recipeId": "8cfbdab7-a6c7-40b5-8272-0396166e9c0d",
+            "servings": 2.5,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1.5,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "cena": {
+            "recipeId": "9ed433a1-4097-456e-8da2-c0b446feef98",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "snacks": [
+            {
+              "recipeId": "75bd9515-9208-4d34-8ad8-ec2f0704a240",
+              "servings": 2,
+              "perPerson": {
+                "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+                "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+              }
+            }
+          ],
+          "note": "vermut con amigos al mediodía"
+        },
+        {
+          "desayuno": {
+            "recipeId": "6fc08f30-a8f0-4041-b2e0-1fac58cc3f13",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "almuerzo": {
+            "recipeId": "d8edd250-e484-4189-9f0b-549a85c2a96d",
+            "servings": 2.5,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1.5,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "cena": {
+            "recipeId": "c552338d-9eef-4160-8560-91d8f3f2f706",
+            "servings": 2,
+            "perPerson": {
+              "7b201143-cded-4b29-ba02-a3729af8c310": 1,
+              "b9a6b87e-b8a7-4a9a-ac6d-c715c37188b4": 1
+            }
+          },
+          "note": "preparar tuppers para la semana"
+        }
+      ],
+      "shopping": {
+        "checked": [],
+        "haveAtHome": [],
+        "extras": []
+      }
+    }
+  ],
+  "activeWeekId": "31c14759-ab04-4bf5-9dfc-70526a6aeed8",
+  "seeded": true
+}
