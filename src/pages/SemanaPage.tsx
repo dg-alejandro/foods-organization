@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent } from 'react'
 import { useAppStore } from '../data/store'
 import { MEAL_TYPES, MEAL_TYPE_LABELS } from '../data/types'
 import type { DayPlan, MealSlot, MealType, Person, WeekPlan } from '../data/types'
@@ -6,15 +7,20 @@ import { calorieSplit, ingredientMap, recipeMacrosPerServing } from '../lib/nutr
 import { addDays, dayLabel, mondayOf, parseISODate, toISODate, weekLabel } from '../lib/dates'
 import {
   MAIN_MEALS,
+  clearSlot,
+  cloneSlot,
   dayIsPlanned,
   dayMacrosForPerson,
   duplicateWeek,
   emptyWeek,
   recipeMap,
+  setSlot,
+  slotAt,
   targetStatus,
+  transferSlot,
   weekMacrosForPerson,
 } from '../lib/planner'
-import type { TargetStatus } from '../lib/planner'
+import type { SlotRef, TargetStatus } from '../lib/planner'
 import { fmtNum, parseNum } from '../lib/format'
 import { buildWeekExportHtml } from '../lib/exportHtml'
 import { fetchDemoBackup } from '../lib/demo'
@@ -41,11 +47,70 @@ const MEAL_ROW_LABELS: Record<MealType, string> = {
   snack: '🍎 Snacks',
 }
 
-/** Referencia a un hueco del planificador; snackIdx undefined = snack nuevo. */
-interface SlotRef {
-  dayIdx: number
-  meal: MealType
-  snackIdx?: number
+function SlotMenu({
+  x,
+  y,
+  slot,
+  hasClipboard,
+  onCut,
+  onCopy,
+  onPaste,
+  onRemove,
+  onClose,
+}: {
+  x: number
+  y: number
+  slot?: MealSlot
+  hasClipboard: boolean
+  onCut: () => void
+  onCopy: () => void
+  onPaste: () => void
+  onRemove: () => void
+  onClose: () => void
+}) {
+  const filled = slot !== undefined
+  const items: { label: string; enabled: boolean; danger?: boolean; run: () => void }[] = [
+    { label: '✂️ Cortar', enabled: filled, run: onCut },
+    { label: '📄 Copiar', enabled: filled, run: onCopy },
+    { label: '📋 Pegar', enabled: hasClipboard, run: onPaste },
+    { label: '🗑️ Quitar', enabled: filled, danger: true, run: onRemove },
+  ]
+  return (
+    <div
+      className="fixed inset-0 z-40"
+      onClick={onClose}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        onClose()
+      }}
+    >
+      <div
+        className="absolute w-36 rounded-xl border border-orange-100 bg-white py-1 shadow-lg"
+        style={{
+          left: Math.min(x, window.innerWidth - 152),
+          top: Math.min(y, window.innerHeight - 150),
+        }}
+      >
+        {items.map((it) => (
+          <button
+            key={it.label}
+            type="button"
+            disabled={!it.enabled}
+            onClick={(e) => {
+              e.stopPropagation()
+              it.run()
+              onClose()
+            }}
+            className={`block w-full px-3 py-1.5 text-left text-sm ${
+              it.danger === true ? 'text-red-600 hover:bg-red-50' : 'text-stone-700 hover:bg-orange-50'
+            } disabled:cursor-default disabled:text-stone-300 disabled:hover:bg-transparent`}
+          >
+            {it.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 function SlotEditor({
@@ -232,6 +297,20 @@ export function SemanaPage() {
   )
   const [viewedId, setViewedId] = useState<string | null>(null)
   const [editor, setEditor] = useState<SlotRef | null>(null)
+  // Portapapeles interno de platos (Cortar/Copiar/Pegar); no persiste a propósito.
+  const [clipboard, setClipboard] = useState<MealSlot | null>(null)
+  const [dragFrom, setDragFrom] = useState<SlotRef | null>(null)
+  const [dropTarget, setDropTarget] = useState<{ dayIdx: number; meal: MealType } | null>(null)
+  const [menu, setMenu] = useState<{ ref: SlotRef; x: number; y: number } | null>(null)
+
+  useEffect(() => {
+    if (menu === null) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenu(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [menu])
 
   const recipesById = useMemo(() => recipeMap(data.recipes), [data.recipes])
   const ingredientsById = useMemo(() => ingredientMap(data.ingredients), [data.ingredients])
@@ -263,28 +342,63 @@ export function SemanaPage() {
   }
 
   const saveSlot = (ref: SlotRef, slot: MealSlot) => {
-    updateDay(ref.dayIdx, (day) => {
-      if (ref.meal === 'snack') {
-        const snacks = [...(day.snacks ?? [])]
-        if (ref.snackIdx !== undefined) snacks[ref.snackIdx] = slot
-        else snacks.push(slot)
-        return { ...day, snacks }
-      }
-      return { ...day, [ref.meal]: slot }
-    })
+    updateDay(ref.dayIdx, (day) => setSlot(day, ref, slot))
   }
 
   const removeSlot = (ref: SlotRef) => {
-    updateDay(ref.dayIdx, (day) => {
-      if (ref.meal === 'snack') {
-        const snacks = (day.snacks ?? []).filter((_, i) => i !== ref.snackIdx)
-        return { ...day, snacks: snacks.length > 0 ? snacks : undefined }
-      }
-      const copy = { ...day }
-      delete copy[ref.meal as 'desayuno' | 'almuerzo' | 'cena']
-      return copy
-    })
+    updateDay(ref.dayIdx, (day) => clearSlot(day, ref))
   }
+
+  const transfer = (from: SlotRef, to: SlotRef, copy: boolean) => {
+    if (week === undefined) return
+    update((d) => ({
+      ...d,
+      weeks: d.weeks.map((w) => (w.id === week.id ? transferSlot(w, from, to, copy) : w)),
+    }))
+  }
+
+  const openMenu = (e: ReactMouseEvent<HTMLElement>, ref: SlotRef) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const rect = e.currentTarget.getBoundingClientRect()
+    setMenu({ ref, x: e.clientX > 0 ? e.clientX : rect.left, y: e.clientY > 0 ? e.clientY : rect.bottom })
+  }
+
+  const handleDragStart = (e: ReactDragEvent<HTMLElement>, ref: SlotRef) => {
+    e.dataTransfer.effectAllowed = 'copyMove'
+    e.dataTransfer.setData('text/plain', 'comidas-slot')
+    setDragFrom(ref)
+  }
+
+  const handleDragEnd = () => {
+    setDragFrom(null)
+    setDropTarget(null)
+  }
+
+  /** Handlers de destino de una celda; en snacks (sin snackIdx) soltar añade. */
+  const dropProps = (target: SlotRef) => ({
+    onDragOver: (e: ReactDragEvent<HTMLElement>) => {
+      if (dragFrom === null) return
+      e.preventDefault()
+      e.dataTransfer.dropEffect = e.ctrlKey ? 'copy' : 'move'
+      setDropTarget((t) =>
+        t !== null && t.dayIdx === target.dayIdx && t.meal === target.meal
+          ? t
+          : { dayIdx: target.dayIdx, meal: target.meal },
+      )
+    },
+    onDrop: (e: ReactDragEvent<HTMLElement>) => {
+      e.preventDefault()
+      if (dragFrom !== null) transfer(dragFrom, target, e.ctrlKey)
+      setDragFrom(null)
+      setDropTarget(null)
+    },
+  })
+
+  const dropClass = (dayIdx: number, meal: MealType) =>
+    dropTarget !== null && dropTarget.dayIdx === dayIdx && dropTarget.meal === meal
+      ? 'bg-orange-100/80'
+      : ''
 
   if (week === undefined) {
     const handleDemo = async () => {
@@ -326,43 +440,65 @@ export function SemanaPage() {
     )
   }
 
-  const currentSlot = (ref: SlotRef): MealSlot | undefined => {
-    const day = week.days[ref.dayIdx]
-    if (ref.meal === 'snack') {
-      return ref.snackIdx !== undefined ? day.snacks?.[ref.snackIdx] : undefined
-    }
-    return day[ref.meal]
-  }
+  const currentSlot = (ref: SlotRef): MealSlot | undefined => slotAt(week, ref)
 
-  const slotButton = (slot: MealSlot | undefined, onClick: () => void, compact = false) => {
+  const renderSlot = (slot: MealSlot | undefined, ref: SlotRef, compact = false) => {
     if (slot === undefined) {
       return (
-        <button
-          type="button"
-          onClick={onClick}
-          className={`w-full rounded-lg border border-dashed border-stone-200 text-stone-300 hover:border-orange-300 hover:text-orange-400 ${compact ? 'py-1 text-xs' : 'min-h-12 text-lg'}`}
-        >
-          +
-        </button>
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={() => setEditor(ref)}
+            onContextMenu={(e) => openMenu(e, ref)}
+            className={`flex-1 rounded-lg border border-dashed border-stone-200 text-stone-300 hover:border-orange-300 hover:text-orange-400 ${compact ? 'py-1 text-xs' : 'min-h-12 text-lg'}`}
+          >
+            +
+          </button>
+          {clipboard !== null && (
+            <button
+              type="button"
+              onClick={() => saveSlot(ref, cloneSlot(clipboard))}
+              className="shrink-0 rounded-lg border border-dashed border-orange-300 px-1 text-xs text-orange-500 hover:bg-orange-50"
+              title="Pegar aquí"
+            >
+              📋
+            </button>
+          )}
+        </div>
       )
     }
     const recipe = recipesById.get(slot.recipeId)
     const perKcal =
       recipe === undefined ? null : recipeMacrosPerServing(recipe, ingredientsById).kcal
     return (
-      <button
-        type="button"
-        onClick={onClick}
-        className="w-full rounded-lg bg-orange-50 px-2 py-1.5 text-left hover:bg-orange-100"
-      >
-        <span className="line-clamp-2 text-xs font-medium text-stone-700">
-          {recipe?.name ?? '(receta borrada)'}
-        </span>
-        <span className="text-[10px] text-stone-400">
-          {fmtNum(slot.servings, slot.servings % 1 === 0 ? 0 : 1)} rac.
-          {perKcal !== null && ` · ${fmtNum(perKcal)} kcal/rac.`}
-        </span>
-      </button>
+      <div className="relative">
+        <button
+          type="button"
+          draggable
+          onDragStart={(e) => handleDragStart(e, ref)}
+          onDragEnd={handleDragEnd}
+          onClick={() => setEditor(ref)}
+          onContextMenu={(e) => openMenu(e, ref)}
+          className="w-full cursor-grab rounded-lg bg-orange-50 px-2 py-1.5 pr-5 text-left hover:bg-orange-100 active:cursor-grabbing"
+          title="Arrastra para mover (con Ctrl, copia)"
+        >
+          <span className="line-clamp-2 text-xs font-medium text-stone-700">
+            {recipe?.name ?? '(receta borrada)'}
+          </span>
+          <span className="text-[10px] text-stone-400">
+            {fmtNum(slot.servings, slot.servings % 1 === 0 ? 0 : 1)} rac.
+            {perKcal !== null && ` · ${fmtNum(perKcal)} kcal/rac.`}
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={(e) => openMenu(e, ref)}
+          className="absolute top-0.5 right-0.5 rounded px-1 text-xs leading-4 text-stone-400 hover:bg-orange-200 hover:text-stone-600"
+          title="Cortar, copiar, pegar…"
+        >
+          ⋯
+        </button>
+      </div>
     )
   }
 
@@ -518,8 +654,12 @@ export function SemanaPage() {
                   {MEAL_ROW_LABELS[meal]}
                 </th>
                 {week.days.map((day, i) => (
-                  <td key={i} className="px-1.5 py-1.5 align-top">
-                    {slotButton(day[meal], () => setEditor({ dayIdx: i, meal }))}
+                  <td
+                    key={i}
+                    className={`px-1.5 py-1.5 align-top ${dropClass(i, meal)}`}
+                    {...dropProps({ dayIdx: i, meal })}
+                  >
+                    {renderSlot(day[meal], { dayIdx: i, meal })}
                   </td>
                 ))}
               </tr>
@@ -529,11 +669,15 @@ export function SemanaPage() {
                 {MEAL_ROW_LABELS.snack}
               </th>
               {week.days.map((day, i) => (
-                <td key={i} className="space-y-1 px-1.5 py-1.5 align-top">
+                <td
+                  key={i}
+                  className={`space-y-1 px-1.5 py-1.5 align-top ${dropClass(i, 'snack')}`}
+                  {...dropProps({ dayIdx: i, meal: 'snack' })}
+                >
                   {(day.snacks ?? []).map((s, si) =>
-                    <div key={si}>{slotButton(s, () => setEditor({ dayIdx: i, meal: 'snack', snackIdx: si }))}</div>,
+                    <div key={si}>{renderSlot(s, { dayIdx: i, meal: 'snack', snackIdx: si })}</div>,
                   )}
-                  {slotButton(undefined, () => setEditor({ dayIdx: i, meal: 'snack' }), true)}
+                  {renderSlot(undefined, { dayIdx: i, meal: 'snack' }, true)}
                 </td>
               ))}
             </tr>
@@ -595,6 +739,31 @@ export function SemanaPage() {
           </tbody>
         </table>
       </div>
+
+      {menu !== null && (
+        <SlotMenu
+          x={menu.x}
+          y={menu.y}
+          slot={currentSlot(menu.ref)}
+          hasClipboard={clipboard !== null}
+          onCut={() => {
+            const s = currentSlot(menu.ref)
+            if (s !== undefined) {
+              setClipboard(cloneSlot(s))
+              removeSlot(menu.ref)
+            }
+          }}
+          onCopy={() => {
+            const s = currentSlot(menu.ref)
+            if (s !== undefined) setClipboard(cloneSlot(s))
+          }}
+          onPaste={() => {
+            if (clipboard !== null) saveSlot(menu.ref, cloneSlot(clipboard))
+          }}
+          onRemove={() => removeSlot(menu.ref)}
+          onClose={() => setMenu(null)}
+        />
+      )}
 
       {editor !== null && (
         <SlotEditor

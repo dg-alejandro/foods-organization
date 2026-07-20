@@ -1,4 +1,4 @@
-import type { DayPlan, MealSlot, Recipe, WeekPlan } from '../data/types'
+import type { DayPlan, MealSlot, MealType, Recipe, WeekPlan } from '../data/types'
 import { newId } from '../data/storage'
 import { ZERO_MACROS, addMacros, recipeMacrosPerServing, scaleMacros } from './nutrition'
 import type { IngredientMap, Macros } from './nutrition'
@@ -26,6 +26,70 @@ export function duplicateWeek(week: WeekPlan, weekStart: string): WeekPlan {
       snacks: d.snacks !== undefined && d.snacks.length > 0 ? [...d.snacks] : undefined,
     })),
   }
+}
+
+/** Referencia a un hueco del planificador; snackIdx undefined = snack nuevo. */
+export interface SlotRef {
+  dayIdx: number
+  meal: MealType
+  snackIdx?: number
+}
+
+export function sameSlotRef(a: SlotRef, b: SlotRef): boolean {
+  return a.dayIdx === b.dayIdx && a.meal === b.meal && a.snackIdx === b.snackIdx
+}
+
+export function slotAt(week: WeekPlan, ref: SlotRef): MealSlot | undefined {
+  const day = week.days[ref.dayIdx]
+  if (day === undefined) return undefined
+  if (ref.meal === 'snack') {
+    return ref.snackIdx !== undefined ? day.snacks?.[ref.snackIdx] : undefined
+  }
+  return day[ref.meal]
+}
+
+/** Copia independiente de un hueco, para que el reparto no quede compartido. */
+export function cloneSlot(slot: MealSlot): MealSlot {
+  return {
+    ...slot,
+    perPerson: slot.perPerson === undefined ? undefined : { ...slot.perPerson },
+  }
+}
+
+/** Asigna un plato al hueco; en snacks sin índice (o fuera de rango) añade. */
+export function setSlot(day: DayPlan, ref: SlotRef, slot: MealSlot): DayPlan {
+  if (ref.meal === 'snack') {
+    const snacks = [...(day.snacks ?? [])]
+    if (ref.snackIdx !== undefined && ref.snackIdx < snacks.length) snacks[ref.snackIdx] = slot
+    else snacks.push(slot)
+    return { ...day, snacks }
+  }
+  return { ...day, [ref.meal]: slot }
+}
+
+export function clearSlot(day: DayPlan, ref: SlotRef): DayPlan {
+  if (ref.meal === 'snack') {
+    const snacks = (day.snacks ?? []).filter((_, i) => i !== ref.snackIdx)
+    return { ...day, snacks: snacks.length > 0 ? snacks : undefined }
+  }
+  const copy = { ...day }
+  delete copy[ref.meal]
+  return copy
+}
+
+/**
+ * Mueve (o copia, con copy=true) el plato de un hueco a otro de la misma
+ * semana. Sobre un hueco principal ocupado sobrescribe; sobre la celda de
+ * snacks (to sin snackIdx) añade. Si el origen está vacío no hace nada.
+ */
+export function transferSlot(week: WeekPlan, from: SlotRef, to: SlotRef, copy: boolean): WeekPlan {
+  const slot = slotAt(week, from)
+  if (slot === undefined) return week
+  if (!copy && sameSlotRef(from, to)) return week
+  let days = week.days
+  if (!copy) days = days.map((day, i) => (i === from.dayIdx ? clearSlot(day, from) : day))
+  days = days.map((day, i) => (i === to.dayIdx ? setSlot(day, to, cloneSlot(slot)) : day))
+  return { ...week, days }
 }
 
 export function daySlots(day: DayPlan): MealSlot[] {
