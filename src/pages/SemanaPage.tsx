@@ -23,6 +23,7 @@ import {
 import type { SlotRef, TargetStatus } from '../lib/planner'
 import { fmtNum, parseNum } from '../lib/format'
 import { buildWeekExportHtml } from '../lib/exportHtml'
+import { fillWeek } from '../lib/suggest'
 import { fetchDemoBackup } from '../lib/demo'
 import { Modal } from '../components/Modal'
 
@@ -302,6 +303,12 @@ export function SemanaPage() {
   const [dragFrom, setDragFrom] = useState<SlotRef | null>(null)
   const [dropTarget, setDropTarget] = useState<{ dayIdx: number; meal: MealType } | null>(null)
   const [menu, setMenu] = useState<{ ref: SlotRef; x: number; y: number } | null>(null)
+  // Último autorrelleno: estado previo para Deshacer / Volver a proponer.
+  const [autoFill, setAutoFill] = useState<{
+    weekId: string
+    before: WeekPlan
+    count: number
+  } | null>(null)
 
   useEffect(() => {
     if (menu === null) return
@@ -355,6 +362,29 @@ export function SemanaPage() {
       ...d,
       weeks: d.weeks.map((w) => (w.id === week.id ? transferSlot(w, from, to, copy) : w)),
     }))
+  }
+
+  /** Rellena los huecos vacíos; con base, re-propone partiendo de ese estado. */
+  const handleAutoFill = (base?: WeekPlan) => {
+    if (week === undefined) return
+    const start = base ?? week
+    const result = fillWeek(start, data.weeks, data.recipes, data.ingredients, data.persons)
+    if (result.filled.length > 0) {
+      update((d) => ({
+        ...d,
+        weeks: d.weeks.map((w) => (w.id === week.id ? { ...result.week, id: week.id } : w)),
+      }))
+    }
+    setAutoFill({ weekId: week.id, before: start, count: result.filled.length })
+  }
+
+  const undoAutoFill = () => {
+    if (autoFill === null) return
+    update((d) => ({
+      ...d,
+      weeks: d.weeks.map((w) => (w.id === autoFill.weekId ? autoFill.before : w)),
+    }))
+    setAutoFill(null)
   }
 
   const openMenu = (e: ReactMouseEvent<HTMLElement>, ref: SlotRef) => {
@@ -537,6 +567,14 @@ export function SemanaPage() {
         <div className="ml-auto flex gap-2">
           <button
             type="button"
+            onClick={() => handleAutoFill()}
+            className="rounded-lg border border-orange-300 px-3 py-2 text-sm font-medium text-orange-700 hover:bg-orange-50"
+            title="Propone recetas para los huecos vacíos según los objetivos de cada persona"
+          >
+            ✨ Rellenar
+          </button>
+          <button
+            type="button"
             onClick={() => {
               const html = buildWeekExportHtml(data, week)
               const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
@@ -569,6 +607,43 @@ export function SemanaPage() {
           </button>
         </div>
       </div>
+
+      {autoFill !== null && autoFill.weekId === week.id && (
+        <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-orange-200 bg-orange-50 px-4 py-2.5 text-sm text-stone-700">
+          <span>
+            ✨{' '}
+            {autoFill.count === 0
+              ? 'No había huecos vacíos que rellenar.'
+              : `Se ${autoFill.count === 1 ? 'ha propuesto 1 plato' : `han propuesto ${autoFill.count} platos`} para los huecos vacíos.`}
+          </span>
+          {autoFill.count > 0 && (
+            <>
+              <button
+                type="button"
+                onClick={undoAutoFill}
+                className="rounded-lg border border-orange-300 bg-white px-3 py-1 text-xs font-medium text-orange-700 hover:bg-orange-100"
+              >
+                Deshacer
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAutoFill(autoFill.before)}
+                className="rounded-lg border border-orange-300 bg-white px-3 py-1 text-xs font-medium text-orange-700 hover:bg-orange-100"
+              >
+                Volver a proponer
+              </button>
+            </>
+          )}
+          <button
+            type="button"
+            onClick={() => setAutoFill(null)}
+            className="ml-auto rounded px-1.5 text-stone-400 hover:bg-orange-100 hover:text-stone-600"
+            title="Cerrar"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {data.persons.map((p) => {
