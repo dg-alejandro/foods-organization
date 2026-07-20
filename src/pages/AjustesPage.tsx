@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useAppStore } from '../data/store'
 import { exportBackup, importBackup } from '../data/storage'
+import { fetchDemoBackup } from '../lib/demo'
 import { parseNum } from '../lib/format'
 import type { MacroTargets, Person } from '../data/types'
 
@@ -71,9 +72,7 @@ function DemoCard() {
 
   const handleLoad = async () => {
     try {
-      const resp = await fetch('/demo-semana.json')
-      if (!resp.ok) throw new Error('No se encontró el archivo de ejemplo.')
-      const imported = importBackup(await resp.text())
+      const imported = await fetchDemoBackup()
       const ok = window.confirm(
         'Esto sustituirá TODOS los datos actuales (personas, ingredientes, recetas y semanas) por la semana de ejemplo. ¿Continuar?',
       )

@@ -17,6 +17,7 @@ import {
 import type { TargetStatus } from '../lib/planner'
 import { fmtNum, parseNum } from '../lib/format'
 import { buildWeekExportHtml } from '../lib/exportHtml'
+import { fetchDemoBackup } from '../lib/demo'
 import { Modal } from '../components/Modal'
 
 const STATUS_TEXT: Record<TargetStatus, string> = {
@@ -224,7 +225,7 @@ function SlotEditor({
 }
 
 export function SemanaPage() {
-  const { data, update } = useAppStore()
+  const { data, update, replaceAll } = useAppStore()
   const weeks = useMemo(
     () => [...data.weeks].sort((a, b) => a.weekStart.localeCompare(b.weekStart)),
     [data.weeks],
@@ -286,18 +287,41 @@ export function SemanaPage() {
   }
 
   if (week === undefined) {
+    const handleDemo = async () => {
+      try {
+        const imported = await fetchDemoBackup()
+        const ok = window.confirm(
+          'Esto cargará la semana de ejemplo sustituyendo los datos actuales. ¿Continuar?',
+        )
+        if (ok) replaceAll(imported)
+      } catch {
+        window.alert('No se pudo cargar la semana de ejemplo.')
+      }
+    }
     return (
       <div className="rounded-2xl border border-dashed border-orange-200 bg-white/60 px-6 py-16 text-center">
         <div className="text-4xl">📅</div>
         <h2 className="mt-3 text-xl font-semibold text-stone-700">Aún no hay ninguna semana</h2>
-        <p className="mt-1 text-sm text-stone-500">Crea la primera para empezar a planificar.</p>
-        <button
-          type="button"
-          onClick={() => addWeek(emptyWeek(nextWeekStart()))}
-          className="mt-5 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-orange-600"
-        >
-          Crear semana
-        </button>
+        <p className="mt-1 text-sm text-stone-500">
+          Crea la primera para empezar a planificar, o carga la semana de ejemplo para ver la app
+          llena.
+        </p>
+        <div className="mt-5 flex justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => addWeek(emptyWeek(nextWeekStart()))}
+            className="rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-orange-600"
+          >
+            Crear semana
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleDemo()}
+            className="rounded-lg border border-orange-300 px-5 py-2.5 text-sm font-medium text-orange-700 hover:bg-orange-50"
+          >
+            ✨ Cargar semana de ejemplo
+          </button>
+        </div>
       </div>
     )
   }

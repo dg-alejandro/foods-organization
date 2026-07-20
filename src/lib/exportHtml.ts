@@ -142,16 +142,16 @@ export function buildWeekExportHtml(data: AppData, week: WeekPlan): string {
 <style>
 :root{--terra:#4f6551;--terra-dark:#324237;--cream:#f8f7f2;--ink:#3b3a36;--muted:#a29e94;--line:#eae8dc}
 *{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:6.5rem}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--cream);color:var(--ink);padding-bottom:3rem}
 header{position:sticky;top:0;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:.7rem 1rem;z-index:5}
 header h1{font-family:Georgia,'Times New Roman',serif;font-size:1.05rem;color:var(--terra-dark)}
 header p{font-size:.75rem;color:var(--muted)}
 nav{display:flex;gap:.4rem;margin-top:.5rem}
-nav button{flex:1;border:0;border-radius:999px;padding:.45rem .6rem;font-size:.85rem;font-weight:600;background:#e6e4d6;color:var(--ink)}
-nav button.active{background:var(--terra);color:#fff}
+nav a{flex:1;text-align:center;text-decoration:none;border-radius:999px;padding:.45rem .6rem;font-size:.85rem;font-weight:600;background:#e6e4d6;color:var(--ink)}
 main{max-width:640px;margin:0 auto;padding:1rem}
-section.tab{display:none}
-section.tab.active{display:block}
+section.tab>h2{font-family:Georgia,'Times New Roman',serif;font-size:1.2rem;color:var(--terra-dark);margin:1.4rem 0 .7rem;padding-bottom:.3rem;border-bottom:2px solid var(--line)}
+section.tab:first-of-type>h2{margin-top:.2rem}
 .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:.9rem 1rem;margin-bottom:.8rem;box-shadow:0 2px 8px rgb(34 44 37 / .06)}
 .card h3{font-family:Georgia,serif;font-size:1rem;color:var(--terra-dark);margin-bottom:.4rem}
 .note{font-size:.8rem;font-style:italic;color:var(--muted);margin-bottom:.3rem}
@@ -182,12 +182,10 @@ ul{list-style:none}
 @media print{
   header nav{display:none}
   body{background:#fff;padding-bottom:0}
-  section.tab{display:block !important;page-break-before:always}
+  section.tab{page-break-before:always}
   section.tab:first-of-type{page-break-before:auto}
   .card{box-shadow:none;break-inside:avoid}
-  .tab>h2{font-family:Georgia,serif;margin:.6rem 0}
 }
-@media screen{.tab>h2{display:none}}
 </style>
 </head>
 <body>
@@ -195,16 +193,16 @@ ul{list-style:none}
   <h1>🍽️ ${esc(weekLabel(week.weekStart))}</h1>
   <p>Plan de comidas de ${data.persons.map((p) => esc(p.name)).join(' y ')}</p>
   <nav>
-    <button type="button" class="active" data-tab="plan">📅 Plan</button>
-    <button type="button" data-tab="compra">🛒 Compra</button>
-    <button type="button" data-tab="recetas">🍳 Recetas</button>
+    <a href="#tab-plan">📅 Plan</a>
+    <a href="#tab-compra">🛒 Compra</a>
+    <a href="#tab-recetas">🍳 Recetas</a>
   </nav>
 </header>
 <main>
-  <section class="tab active" id="tab-plan"><h2>Plan semanal</h2>
+  <section class="tab" id="tab-plan"><h2>📅 Plan semanal</h2>
 ${dayCards}
   </section>
-  <section class="tab" id="tab-compra"><h2>Lista de la compra</h2>
+  <section class="tab" id="tab-compra"><h2>🛒 Lista de la compra</h2>
   <section class="card total-card">
     <h3>Total a comprar</h3>
     <div class="big">${fmtEuro(totals.totalToBuy)}</div>
@@ -214,21 +212,13 @@ ${dayCards}
 ${shoppingHtml}
 ${extrasHtml}
   </section>
-  <section class="tab" id="tab-recetas"><h2>Recetas de la semana</h2>
+  <section class="tab" id="tab-recetas"><h2>🍳 Recetas de la semana</h2>
 ${recipesHtml.length > 0 ? recipesHtml : '<p class="empty">No hay recetas planificadas.</p>'}
   </section>
 </main>
 <script>
 (function(){
   var KEY=${JSON.stringify(storageKey)};
-  var tabs=document.querySelectorAll('nav button');
-  tabs.forEach(function(b){b.addEventListener('click',function(){
-    tabs.forEach(function(x){x.classList.remove('active')});
-    document.querySelectorAll('section.tab').forEach(function(s){s.classList.remove('active')});
-    b.classList.add('active');
-    document.getElementById('tab-'+b.dataset.tab).classList.add('active');
-    window.scrollTo(0,0);
-  })});
   var boxes=document.querySelectorAll('.shop input[type=checkbox]');
   var saved=[];
   try{saved=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){}
