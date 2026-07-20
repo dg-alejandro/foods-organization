@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useAppStore } from '../data/store'
 import { exportBackup, importBackup } from '../data/storage'
 import { fetchDemoBackup } from '../lib/demo'
+import { downloadFile } from '../lib/download'
 import { parseNum } from '../lib/format'
 import type { MacroTargets, Person } from '../data/types'
 
@@ -191,14 +192,8 @@ function BackupCard() {
   const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null)
 
   const handleExport = () => {
-    const blob = new Blob([exportBackup(data)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
     const today = new Date().toISOString().slice(0, 10)
-    a.href = url
-    a.download = `comidas-copia-${today}.json`
-    a.click()
-    URL.revokeObjectURL(url)
+    downloadFile(`comidas-copia-${today}.json`, exportBackup(data), 'application/json')
     setMessage({ kind: 'ok', text: 'Copia de seguridad descargada.' })
   }
 

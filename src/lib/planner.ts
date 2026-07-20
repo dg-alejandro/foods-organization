@@ -92,6 +92,19 @@ export function transferSlot(week: WeekPlan, from: SlotRef, to: SlotRef, copy: b
   return { ...week, days }
 }
 
+/** Quita del día todos los huecos que usan una receta (al borrarla del banco). */
+export function removeRecipeFromDay(day: DayPlan, recipeId: string): DayPlan {
+  const out: DayPlan = { ...day }
+  for (const meal of MAIN_MEALS) {
+    if (out[meal]?.recipeId === recipeId) delete out[meal]
+  }
+  if (out.snacks !== undefined) {
+    const snacks = out.snacks.filter((s) => s.recipeId !== recipeId)
+    out.snacks = snacks.length > 0 ? snacks : undefined
+  }
+  return out
+}
+
 export function daySlots(day: DayPlan): MealSlot[] {
   const slots: MealSlot[] = []
   for (const meal of MAIN_MEALS) {

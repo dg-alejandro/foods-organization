@@ -4,7 +4,7 @@ import { newId } from '../data/storage'
 import { CATEGORIES, CATEGORY_LABELS } from '../data/types'
 import type { Category, Ingredient, Unit } from '../data/types'
 import { displayPrice, priceIsStale } from '../lib/nutrition'
-import { fmtEuro, fmtNum, parseNum } from '../lib/format'
+import { fmtEuro, fmtNum, normalizeSearch, parseNum } from '../lib/format'
 import { Modal } from '../components/Modal'
 
 const UNIT_LABELS: Record<Unit, string> = { g: 'gramos (g)', ml: 'mililitros (ml)', ud: 'unidades' }
@@ -42,15 +42,19 @@ const inputCls =
 
 function IngredientForm({
   initial,
+  usedByCount,
   onSave,
   onClose,
 }: {
   initial?: Ingredient
+  /** Recetas que usan el ingrediente: si hay, la unidad base queda bloqueada. */
+  usedByCount: number
   onSave: (ing: Ingredient) => void
   onClose: () => void
 }) {
   const [form, setForm] = useState<FormState>(() => toForm(initial))
   const [error, setError] = useState<string | null>(null)
+  const unitLocked = initial !== undefined && usedByCount > 0
 
   const set = (change: Partial<FormState>) => setForm((f) => ({ ...f, ...change }))
 
@@ -73,7 +77,7 @@ function IngredientForm({
       id: prev?.id ?? newId(),
       name: f.name.trim(),
       category: f.category,
-      unit: f.unit,
+      unit: unitLocked && prev !== undefined ? prev.unit : f.unit,
       kcal100: num(f.kcal100),
       protein100: num(f.protein100),
       carbs100: num(f.carbs100),
@@ -131,7 +135,8 @@ function IngredientForm({
             <select
               value={form.unit}
               onChange={(e) => set({ unit: e.target.value as Unit })}
-              className={inputCls}
+              disabled={unitLocked}
+              className={`${inputCls} disabled:bg-stone-50 disabled:text-stone-400`}
             >
               {(Object.keys(UNIT_LABELS) as Unit[]).map((u) => (
                 <option key={u} value={u}>
@@ -139,6 +144,12 @@ function IngredientForm({
                 </option>
               ))}
             </select>
+            {unitLocked && (
+              <span className="mt-1 block text-xs text-stone-400">
+                No se puede cambiar: se usa en {usedByCount === 1 ? '1 receta' : `${usedByCount} recetas`}{' '}
+                y las cantidades guardadas están en esta unidad.
+              </span>
+            )}
           </label>
         </div>
 
@@ -232,10 +243,10 @@ export function IngredientesPage() {
   const [editing, setEditing] = useState<Ingredient | 'new' | null>(null)
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLocaleLowerCase('es')
+    const q = normalizeSearch(search)
     return data.ingredients
       .filter((i) => (category === 'todas' ? true : i.category === category))
-      .filter((i) => (q === '' ? true : i.name.toLocaleLowerCase('es').includes(q)))
+      .filter((i) => (q === '' ? true : normalizeSearch(i.name).includes(q)))
       .sort((a, b) => a.name.localeCompare(b.name, 'es'))
   }, [data.ingredients, search, category])
 
@@ -388,6 +399,7 @@ export function IngredientesPage() {
       {editing !== null && (
         <IngredientForm
           initial={editing === 'new' ? undefined : editing}
+          usedByCount={editing === 'new' ? 0 : usedBy(editing.id).length}
           onSave={handleSave}
           onClose={() => setEditing(null)}
         />

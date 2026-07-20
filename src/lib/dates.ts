@@ -39,6 +39,9 @@ export function weekLabel(weekStart: string): string {
   const end = addDays(start, 6)
   const month = (d: Date) => d.toLocaleDateString('es-ES', { month: 'long' })
   const year = end.getFullYear()
+  if (start.getFullYear() !== year) {
+    return `Semana del ${start.getDate()} de ${month(start)} de ${start.getFullYear()} al ${end.getDate()} de ${month(end)} de ${year}`
+  }
   if (start.getMonth() === end.getMonth()) {
     return `Semana del ${start.getDate()} al ${end.getDate()} de ${month(end)} de ${year}`
   }

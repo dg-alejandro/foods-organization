@@ -21,8 +21,9 @@ import {
   weekMacrosForPerson,
 } from '../lib/planner'
 import type { SlotRef, TargetStatus } from '../lib/planner'
-import { fmtNum, parseNum } from '../lib/format'
+import { fmtNum, normalizeSearch, parseNum } from '../lib/format'
 import { buildWeekExportHtml } from '../lib/exportHtml'
+import { downloadFile } from '../lib/download'
 import { fillWeek } from '../lib/suggest'
 import { fetchDemoBackup } from '../lib/demo'
 import { Modal } from '../components/Modal'
@@ -47,6 +48,10 @@ const MEAL_ROW_LABELS: Record<MealType, string> = {
   cena: '🌙 Cena',
   snack: '🍎 Snacks',
 }
+
+/** En táctil no hay arrastre nativo ni Ctrl: los hints de ratón sobran. */
+const HAS_FINE_POINTER =
+  typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches
 
 function SlotMenu({
   x,
@@ -148,10 +153,10 @@ function SlotEditor({
   })
 
   const matches = useMemo(() => {
-    const q = search.trim().toLocaleLowerCase('es')
+    const q = normalizeSearch(search)
     return data.recipes
       .filter((r) => (typeFilter === 'todos' ? true : r.mealType === typeFilter))
-      .filter((r) => (q === '' ? true : r.name.toLocaleLowerCase('es').includes(q)))
+      .filter((r) => (q === '' ? true : normalizeSearch(r.name).includes(q)))
       .sort((a, b) => a.name.localeCompare(b.name, 'es'))
       .slice(0, 30)
   }, [data.recipes, search, typeFilter])
@@ -480,6 +485,7 @@ export function SemanaPage() {
             type="button"
             onClick={() => setEditor(ref)}
             onContextMenu={(e) => openMenu(e, ref)}
+            aria-label={`Añadir ${MEAL_TYPE_LABELS[ref.meal].toLocaleLowerCase('es')}`}
             className={`flex-1 rounded-lg border border-dashed border-stone-200 text-stone-300 hover:border-orange-300 hover:text-orange-400 ${compact ? 'py-1 text-xs' : 'min-h-12 text-lg'}`}
           >
             +
@@ -510,12 +516,12 @@ export function SemanaPage() {
           onClick={() => setEditor(ref)}
           onContextMenu={(e) => openMenu(e, ref)}
           className="w-full cursor-grab rounded-lg bg-orange-50 px-2 py-1.5 pr-5 text-left hover:bg-orange-100 active:cursor-grabbing"
-          title="Arrastra para mover (con Ctrl, copia)"
+          title={HAS_FINE_POINTER ? 'Arrastra para mover (con Ctrl, copia)' : undefined}
         >
           <span className="line-clamp-2 text-xs font-medium text-stone-700">
             {recipe?.name ?? '(receta borrada)'}
           </span>
-          <span className="text-[10px] text-stone-400">
+          <span className="text-[10px] text-stone-500">
             {fmtNum(slot.servings, slot.servings % 1 === 0 ? 0 : 1)} rac.
             {perKcal !== null && ` · ${fmtNum(perKcal)} kcal/rac.`}
           </span>
@@ -559,10 +565,19 @@ export function SemanaPage() {
             ▶
           </button>
         </div>
-        {week.id === (data.activeWeekId ?? weeks[weeks.length - 1].id) && (
+        {week.id === (data.activeWeekId ?? weeks[weeks.length - 1].id) ? (
           <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
             🛒 semana activa
           </span>
+        ) : (
+          <button
+            type="button"
+            onClick={() => update((d) => ({ ...d, activeWeekId: week.id }))}
+            className="rounded-full border border-orange-200 px-2.5 py-1 text-xs font-medium text-orange-700 hover:bg-orange-100"
+            title="La lista de la Compra pasará a usar esta semana"
+          >
+            🛒 Hacer activa
+          </button>
         )}
         <div className="ml-auto flex gap-2">
           <button
@@ -575,16 +590,13 @@ export function SemanaPage() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              const html = buildWeekExportHtml(data, week)
-              const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
-              const url = URL.createObjectURL(blob)
-              const a = document.createElement('a')
-              a.href = url
-              a.download = `semana-${week.weekStart}.html`
-              a.click()
-              URL.revokeObjectURL(url)
-            }}
+            onClick={() =>
+              downloadFile(
+                `semana-${week.weekStart}.html`,
+                buildWeekExportHtml(data, week),
+                'text/html;charset=utf-8',
+              )
+            }
             className="rounded-lg border border-orange-300 px-3 py-2 text-sm font-medium text-orange-700 hover:bg-orange-50"
             title="Descarga un HTML para consultar el plan desde el móvil"
           >
@@ -676,11 +688,11 @@ export function SemanaPage() {
                       <div className={`text-sm font-bold ${STATUS_TEXT[status]}`}>
                         {fmtNum(s.value)}
                       </div>
-                      <div className="text-[10px] text-stone-400">
+                      <div className="text-[10px] text-stone-500">
                         {s.label}
                         {target !== null && ` / ${fmtNum(target)}`}
                       </div>
-                      <div className="mt-0.5 text-[9px] text-stone-400">
+                      <div className="mt-0.5 text-[9px] text-stone-500">
                         sem. {fmtNum(s.total)}
                         {pct !== null && daysPlanned > 0 && (
                           <span className={STATUS_TEXT[status]}> · {fmtNum(pct)} %</span>
@@ -697,7 +709,7 @@ export function SemanaPage() {
                     <div className="bg-amber-300" style={{ width: `${split.carbs}%` }} />
                     <div className="bg-sky-300" style={{ width: `${split.fat}%` }} />
                   </div>
-                  <p className="mt-1 text-[10px] text-stone-400">
+                  <p className="mt-1 text-[10px] text-stone-500">
                     Reparto calórico:{' '}
                     <span className="text-rose-400">●</span> P {fmtNum(split.protein)} % ·{' '}
                     <span className="text-amber-400">●</span> H {fmtNum(split.carbs)} % ·{' '}
@@ -780,7 +792,7 @@ export function SemanaPage() {
                             >
                               {p.name.slice(0, 3)} {fmtNum(macros.kcal)}
                             </div>
-                            <div className="mt-0.5 text-[9px] leading-tight text-stone-400">
+                            <div className="mt-0.5 text-[9px] leading-tight text-stone-500">
                               P {fmtNum(macros.protein)} · H {fmtNum(macros.carbs)} · G{' '}
                               {fmtNum(macros.fat)}
                             </div>

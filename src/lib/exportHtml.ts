@@ -40,7 +40,15 @@ export function buildWeekExportHtml(data: AppData, week: WeekPlan): string {
     const recipe = recipesById.get(slot.recipeId)
     const name = recipe?.name ?? '(receta borrada)'
     const rac = fmtNum(slot.servings, slot.servings % 1 === 0 ? 0 : 1)
-    return `<li><span class="icon">${icon}</span><span class="meal">${esc(label)}</span><span class="dish">${esc(name)}</span><span class="rac">${rac} rac.</span></li>`
+    // Reparto por persona (nombres abreviados), si está guardado y no es trivial.
+    const per = slot.perPerson
+    const split =
+      per === undefined || data.persons.length < 2
+        ? ''
+        : ` · ${data.persons
+            .map((p) => `${esc(p.name.slice(0, 3))} ${fmtNum(per[p.id] ?? 0, (per[p.id] ?? 0) % 1 === 0 ? 0 : 1)}`)
+            .join(' / ')}`
+    return `<li><span class="icon">${icon}</span><span class="meal">${esc(label)}</span><span class="dish">${esc(name)}</span><span class="rac">${rac} rac.${split}</span></li>`
   }
 
   const dayCards = week.days

@@ -10,7 +10,8 @@ import {
   recipeMacrosPerServing,
   scaleMacros,
 } from '../lib/nutrition'
-import { fmtEuro, fmtNum, parseNum } from '../lib/format'
+import { fmtEuro, fmtNum, normalizeSearch, parseNum } from '../lib/format'
+import { daySlots, removeRecipeFromDay } from '../lib/planner'
 import { Modal } from '../components/Modal'
 
 const inputCls =
@@ -66,10 +67,10 @@ function IngredientPicker({
   const [open, setOpen] = useState(false)
 
   const matches = useMemo(() => {
-    const q = query.trim().toLocaleLowerCase('es')
+    const q = normalizeSearch(query)
     if (q === '') return []
     return ingredients
-      .filter((i) => !excludeIds.has(i.id) && i.name.toLocaleLowerCase('es').includes(q))
+      .filter((i) => !excludeIds.has(i.id) && normalizeSearch(i.name).includes(q))
       .sort((a, b) => a.name.localeCompare(b.name, 'es'))
       .slice(0, 8)
   }, [ingredients, excludeIds, query])
@@ -167,12 +168,28 @@ function RecipeForm({
   const perServing = scaleMacros(totalMacros, 1 / (preview.servings > 0 ? preview.servings : 1))
   const cost = recipeCost(preview, byId)
 
+  // Redimensiona y comprime antes de guardar: una foto de móvil en base64
+  // supera la cuota de localStorage (~5 MB en iOS Safari).
   const handlePhotoFile = (file: File) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      if (typeof reader.result === 'string') set({ photo: reader.result })
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      const MAX_SIDE = 800
+      const scale = Math.min(1, MAX_SIDE / Math.max(img.width, img.height))
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.max(Math.round(img.width * scale), 1)
+      canvas.height = Math.max(Math.round(img.height * scale), 1)
+      const ctx = canvas.getContext('2d')
+      if (ctx === null) return
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+      set({ photo: canvas.toDataURL('image/jpeg', 0.8) })
     }
-    reader.readAsDataURL(file)
+    img.onerror = () => {
+      URL.revokeObjectURL(url)
+      setError('No se pudo leer la imagen.')
+    }
+    img.src = url
   }
 
   const handleSave = () => {
@@ -318,7 +335,23 @@ function RecipeForm({
               )}
               {form.items.map((it, idx) => {
                 const ing = byId.get(it.ingredientId)
-                if (ing === undefined) return null
+                if (ing === undefined) {
+                  return (
+                    <div key={it.ingredientId} className="flex items-center gap-2">
+                      <span className="min-w-0 flex-1 truncate text-sm text-stone-400 italic">
+                        (ingrediente borrado)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => set({ items: form.items.filter((_, i) => i !== idx) })}
+                        className="rounded px-1.5 py-1 text-stone-400 hover:bg-red-50 hover:text-red-600"
+                        title="Quitar"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )
+                }
                 return (
                   <div key={it.ingredientId} className="flex items-center gap-2">
                     <span className="min-w-0 flex-1 truncate text-sm text-stone-700">{ing.name}</span>
@@ -409,11 +442,11 @@ export function RecetasPage() {
   }, [data.recipes])
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLocaleLowerCase('es')
+    const q = normalizeSearch(search)
     return data.recipes
       .filter((r) => (mealType === 'todos' ? true : r.mealType === mealType))
       .filter((r) => (tag === 'todas' ? true : (r.tags ?? []).includes(tag)))
-      .filter((r) => (q === '' ? true : r.name.toLocaleLowerCase('es').includes(q)))
+      .filter((r) => (q === '' ? true : normalizeSearch(r.name).includes(q)))
       .sort((a, b) => a.name.localeCompare(b.name, 'es'))
   }, [data.recipes, search, mealType, tag])
 
@@ -436,9 +469,31 @@ export function RecetasPage() {
   }
 
   const handleDelete = (recipe: Recipe) => {
-    if (window.confirm(`¿Borrar la receta «${recipe.name}»?`)) {
-      update((d) => ({ ...d, recipes: d.recipes.filter((r) => r.id !== recipe.id) }))
-    }
+    const slotCount = data.weeks.reduce(
+      (n, w) =>
+        n + w.days.reduce((m, d) => m + daySlots(d).filter((s) => s.recipeId === recipe.id).length, 0),
+      0,
+    )
+    const weekCount = data.weeks.filter((w) =>
+      w.days.some((d) => daySlots(d).some((s) => s.recipeId === recipe.id)),
+    ).length
+    const message =
+      slotCount === 0
+        ? `¿Borrar la receta «${recipe.name}»?`
+        : `«${recipe.name}» está en ${slotCount} ${slotCount === 1 ? 'hueco' : 'huecos'} de ` +
+          `${weekCount} ${weekCount === 1 ? 'semana' : 'semanas'}. Al borrarla se quitará también del plan. ¿Continuar?`
+    if (!window.confirm(message)) return
+    update((d) => ({
+      ...d,
+      recipes: d.recipes.filter((r) => r.id !== recipe.id),
+      weeks:
+        slotCount === 0
+          ? d.weeks
+          : d.weeks.map((w) => ({
+              ...w,
+              days: w.days.map((day) => removeRecipeFromDay(day, recipe.id)),
+            })),
+    }))
   }
 
   return (

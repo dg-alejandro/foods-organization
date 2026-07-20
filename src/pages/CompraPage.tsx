@@ -8,7 +8,7 @@ import { recipeMap } from '../lib/planner'
 import { aggregateWeek, groupByCategory, shoppingTotals } from '../lib/shopping'
 import type { ShoppingLine } from '../lib/shopping'
 import { weekLabel } from '../lib/dates'
-import { fmtEuro, fmtNum, parseNum } from '../lib/format'
+import { fmtEuro, fmtInput, fmtNum, parseNum } from '../lib/format'
 
 function EmptyState({ title, hint }: { title: string; hint: string }) {
   return (
@@ -72,6 +72,8 @@ export function CompraPage() {
 
   const setNeeded = (line: ShoppingLine, raw: string) => {
     const n = parseNum(raw)
+    // Entrada no válida (texto, formato raro): no tocar lo guardado.
+    if (raw.trim() !== '' && n === null) return
     updateShopping((s) => {
       const overrides = { ...(s.qtyOverrides ?? {}) }
       if (n === null || n < 0 || n === line.computedQty) delete overrides[line.ingredientId]
@@ -167,6 +169,7 @@ export function CompraPage() {
                               type="checkbox"
                               checked={isChecked}
                               onChange={() => toggleChecked(line.ingredientId)}
+                              aria-label={`Marcar ${line.name}`}
                               className="size-4 accent-orange-500"
                             />
                           </td>
@@ -182,7 +185,7 @@ export function CompraPage() {
                               key={`n-${line.ingredientId}-${line.neededQty}`}
                               type="text"
                               inputMode="decimal"
-                              defaultValue={fmtNum(line.neededQty, line.neededQty % 1 === 0 ? 0 : 1)}
+                              defaultValue={fmtInput(line.neededQty)}
                               onBlur={(e) => setNeeded(line, e.target.value)}
                               className={qtyInputCls}
                               title={
@@ -198,13 +201,13 @@ export function CompraPage() {
                               key={`h-${line.ingredientId}-${line.atHomeQty}`}
                               type="text"
                               inputMode="decimal"
-                              defaultValue={
-                                line.atHomeQty === 0
-                                  ? ''
-                                  : fmtNum(line.atHomeQty, line.atHomeQty % 1 === 0 ? 0 : 1)
-                              }
+                              defaultValue={line.atHomeQty === 0 ? '' : fmtInput(line.atHomeQty)}
                               placeholder="0"
-                              onBlur={(e) => setAtHome(line, parseNum(e.target.value) ?? 0)}
+                              onBlur={(e) => {
+                                const raw = e.target.value.trim()
+                                const n = raw === '' ? 0 : parseNum(raw)
+                                if (n !== null) setAtHome(line, n)
+                              }}
                               className={qtyInputCls}
                             />
                             <span className="ml-0.5 text-xs text-stone-400">{line.unit}</span>
@@ -262,6 +265,7 @@ export function CompraPage() {
                       <input
                         type="checkbox"
                         checked={extra.checked}
+                        aria-label={`Marcar ${extra.name}`}
                         onChange={() =>
                           updateShopping((s) => ({
                             ...s,
