@@ -53,7 +53,19 @@ export function fillWeek(
   }
   const defaultSlot = (recipeId: string): MealSlot => {
     const prev = lastUse.get(recipeId)
-    if (prev !== undefined) return cloneSlot(prev)
+    if (prev !== undefined) {
+      // Conservar solo el reparto de personas que sigan existiendo.
+      const perPerson: Record<string, number> = {}
+      for (const p of persons) {
+        const n = prev.perPerson?.[p.id]
+        if (n !== undefined) perPerson[p.id] = n
+      }
+      if (Object.keys(perPerson).length > 0) {
+        const total = Object.values(perPerson).reduce((a, b) => a + b, 0)
+        if (total > 0) return { recipeId, servings: total, perPerson }
+      }
+      if (prev.perPerson === undefined) return cloneSlot(prev)
+    }
     const perPerson: Record<string, number> = {}
     for (const p of persons) perPerson[p.id] = 1
     return { recipeId, servings: Math.max(personCount, 1), perPerson }

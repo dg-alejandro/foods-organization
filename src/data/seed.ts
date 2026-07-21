@@ -27,7 +27,8 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
 
   // Carnicería
   { name: 'Pechuga de pollo', category: 'carniceria', unit: 'g', kcal100: 110, protein100: 23, carbs100: 0, fat100: 1.5 },
-  { name: 'Muslo de pollo', category: 'carniceria', unit: 'g', kcal100: 175, protein100: 18, carbs100: 0, fat100: 11 },
+  // Contramuslo/muslo con piel, lo habitual del súper (sin piel: ~145 kcal).
+  { name: 'Muslo de pollo', category: 'carniceria', unit: 'g', kcal100: 209, protein100: 17.3, carbs100: 0, fat100: 15.5 },
   { name: 'Ternera magra', category: 'carniceria', unit: 'g', kcal100: 131, protein100: 21, carbs100: 0, fat100: 5 },
   { name: 'Lomo de cerdo', category: 'carniceria', unit: 'g', kcal100: 143, protein100: 21, carbs100: 0, fat100: 6.2 },
   { name: 'Carne picada mixta', category: 'carniceria', unit: 'g', kcal100: 220, protein100: 18, carbs100: 0, fat100: 16 },
@@ -38,14 +39,16 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   // Pescadería
   { name: 'Merluza', category: 'pescaderia', unit: 'g', kcal100: 72, protein100: 15.9, carbs100: 0, fat100: 0.9 },
   { name: 'Salmón', category: 'pescaderia', unit: 'g', kcal100: 208, protein100: 20, carbs100: 0, fat100: 13 },
-  { name: 'Atún fresco', category: 'pescaderia', unit: 'g', kcal100: 130, protein100: 28, carbs100: 0, fat100: 1.3 },
+  // Crudo (yellowfin, el lomo típico de súper); 28 g de proteína era el valor cocinado.
+  { name: 'Atún fresco', category: 'pescaderia', unit: 'g', kcal100: 110, protein100: 24, carbs100: 0, fat100: 1 },
   { name: 'Gambas', category: 'pescaderia', unit: 'g', kcal100: 85, protein100: 20, carbs100: 0.2, fat100: 0.5 },
   { name: 'Dorada', category: 'pescaderia', unit: 'g', kcal100: 96, protein100: 19.8, carbs100: 0, fat100: 1.8 },
 
   // Lácteos y huevos
   { name: 'Leche semidesnatada', category: 'lacteos', unit: 'ml', kcal100: 46, protein100: 3.1, carbs100: 4.7, fat100: 1.6 },
   { name: 'Huevo', category: 'lacteos', unit: 'ud', kcal100: 70, protein100: 6.3, carbs100: 0.4, fat100: 4.8 },
-  { name: 'Yogur natural', category: 'lacteos', unit: 'ud', kcal100: 57, protein100: 4.1, carbs100: 5.5, fat100: 2 },
+  // Por unidad de 125 g (los valores antiguos eran por 100 g).
+  { name: 'Yogur natural', category: 'lacteos', unit: 'ud', kcal100: 71, protein100: 5.1, carbs100: 6.9, fat100: 2.5 },
   { name: 'Queso fresco batido 0%', category: 'lacteos', unit: 'g', kcal100: 47, protein100: 8, carbs100: 4, fat100: 0.2 },
   { name: 'Queso curado', category: 'lacteos', unit: 'g', kcal100: 402, protein100: 25, carbs100: 1.3, fat100: 33 },
   { name: 'Mantequilla', category: 'lacteos', unit: 'g', kcal100: 717, protein100: 0.9, carbs100: 0.1, fat100: 81 },
@@ -56,9 +59,10 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   { name: 'Pasta', category: 'despensa', unit: 'g', kcal100: 371, protein100: 13, carbs100: 74, fat100: 1.5 },
   { name: 'Lentejas secas', category: 'despensa', unit: 'g', kcal100: 352, protein100: 24.6, carbs100: 60, fat100: 1.1 },
   { name: 'Garbanzos cocidos (bote)', category: 'despensa', unit: 'g', kcal100: 139, protein100: 7.7, carbs100: 20, fat100: 2.6 },
-  { name: 'Atún en lata (escurrido)', category: 'despensa', unit: 'g', kcal100: 190, protein100: 26, carbs100: 0, fat100: 9 },
+  { name: 'Atún en lata en aceite (escurrido)', category: 'despensa', unit: 'g', kcal100: 190, protein100: 26, carbs100: 0, fat100: 9 },
   { name: 'Tomate frito', category: 'despensa', unit: 'g', kcal100: 78, protein100: 1.5, carbs100: 8.5, fat100: 4.2 },
-  { name: 'Aceite de oliva virgen extra', category: 'despensa', unit: 'ml', kcal100: 884, protein100: 0, carbs100: 0, fat100: 100 },
+  // Por 100 ml (densidad ~0,916 g/ml): 91,6 g de grasa; 884/100 era el valor por 100 g.
+  { name: 'Aceite de oliva virgen extra', category: 'despensa', unit: 'ml', kcal100: 822, protein100: 0, carbs100: 0, fat100: 91.6 },
   { name: 'Harina de trigo', category: 'despensa', unit: 'g', kcal100: 364, protein100: 10, carbs100: 76, fat100: 1 },
   { name: 'Azúcar', category: 'despensa', unit: 'g', kcal100: 387, protein100: 0, carbs100: 100, fat100: 0 },
   { name: 'Copos de avena', category: 'despensa', unit: 'g', kcal100: 389, protein100: 16.9, carbs100: 66, fat100: 6.9 },
@@ -82,3 +86,42 @@ export const SEED_INGREDIENTS: SeedIngredient[] = [
   { name: 'Tofu', category: 'otros', unit: 'g', kcal100: 76, protein100: 8, carbs100: 1.9, fat100: 4.8 },
   { name: 'Hummus', category: 'otros', unit: 'g', kcal100: 166, protein100: 7.9, carbs100: 14.3, fat100: 9.6 },
 ]
+
+/** Nombres antiguos del banco base → nombre actual (para actualizar datos ya guardados). */
+export const SEED_RENAMES: Record<string, string> = {
+  'Atún en lata (escurrido)': 'Atún en lata en aceite (escurrido)',
+}
+
+/**
+ * Actualiza en los datos del usuario los valores nutricionales (y renombres)
+ * del banco base, emparejando por nombre. No toca precios, categoría, unidad
+ * ni recetas. Devuelve los datos nuevos y cuántos ingredientes han cambiado.
+ */
+export function refreshSeedNutrition<T extends { ingredients: Ingredient[] }>(
+  data: T,
+): { data: T; updated: number } {
+  const byName = new Map(SEED_INGREDIENTS.map((s) => [s.name.toLocaleLowerCase('es'), s]))
+  let updated = 0
+  const ingredients = data.ingredients.map((ing) => {
+    const currentName = SEED_RENAMES[ing.name] ?? ing.name
+    const seed = byName.get(currentName.toLocaleLowerCase('es'))
+    if (seed === undefined) return ing
+    const changed =
+      currentName !== ing.name ||
+      seed.kcal100 !== ing.kcal100 ||
+      seed.protein100 !== ing.protein100 ||
+      seed.carbs100 !== ing.carbs100 ||
+      seed.fat100 !== ing.fat100
+    if (!changed) return ing
+    updated++
+    return {
+      ...ing,
+      name: currentName,
+      kcal100: seed.kcal100,
+      protein100: seed.protein100,
+      carbs100: seed.carbs100,
+      fat100: seed.fat100,
+    }
+  })
+  return updated === 0 ? { data, updated } : { data: { ...data, ingredients }, updated }
+}

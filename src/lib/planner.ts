@@ -92,6 +92,20 @@ export function transferSlot(week: WeekPlan, from: SlotRef, to: SlotRef, copy: b
   return { ...week, days }
 }
 
+/**
+ * Vacía los huecos indicados solo si aún contienen la receta esperada
+ * (deshacer selectivo del autorrelleno: lo editado a mano no se toca).
+ */
+export function clearPlacedSlots(
+  week: WeekPlan,
+  placed: { ref: SlotRef; recipeId: string }[],
+): WeekPlan {
+  return placed.reduce((acc, { ref, recipeId }) => {
+    if (slotAt(acc, ref)?.recipeId !== recipeId) return acc
+    return { ...acc, days: acc.days.map((d, i) => (i === ref.dayIdx ? clearSlot(d, ref) : d)) }
+  }, week)
+}
+
 /** Quita del día todos los huecos que usan una receta (al borrarla del banco). */
 export function removeRecipeFromDay(day: DayPlan, recipeId: string): DayPlan {
   const out: DayPlan = { ...day }

@@ -126,14 +126,17 @@ body {
   }
 }
 
-/* Las tarjetas blancas se elevan con delicadeza al pasar el ratón */
-main .rounded-2xl.bg-white {
+/*
+ * Las tarjetas blancas se elevan con delicadeza al pasar el ratón.
+ * Solo las tarjetas con shadow-sm: así no afecta a los modales (shadow-xl).
+ */
+main .rounded-2xl.bg-white.shadow-sm {
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
 }
 
-main .rounded-2xl.bg-white:hover {
+main .rounded-2xl.bg-white.shadow-sm:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 24px -12px rgb(34 44 37 / 0.25);
 }

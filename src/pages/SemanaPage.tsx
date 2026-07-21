@@ -7,6 +7,7 @@ import { calorieSplit, ingredientMap, recipeMacrosPerServing } from '../lib/nutr
 import { addDays, dayLabel, mondayOf, parseISODate, toISODate, weekLabel } from '../lib/dates'
 import {
   MAIN_MEALS,
+  clearPlacedSlots,
   clearSlot,
   cloneSlot,
   dayIsPlanned,
@@ -21,12 +22,13 @@ import {
   weekMacrosForPerson,
 } from '../lib/planner'
 import type { SlotRef, TargetStatus } from '../lib/planner'
-import { fmtNum, normalizeSearch, parseNum } from '../lib/format'
+import { fmtInput, fmtNum, normalizeSearch, parseNum } from '../lib/format'
 import { buildWeekExportHtml } from '../lib/exportHtml'
 import { downloadFile } from '../lib/download'
 import { fillWeek } from '../lib/suggest'
 import { fetchDemoBackup } from '../lib/demo'
 import { Modal } from '../components/Modal'
+import { EmptyState } from '../components/EmptyState'
 
 const STATUS_TEXT: Record<TargetStatus, string> = {
   ok: 'text-green-600',
@@ -147,7 +149,7 @@ function SlotEditor({
         slot === undefined
           ? 1
           : (slot.perPerson?.[p.id] ?? slot.servings / Math.max(data.persons.length, 1))
-      out[p.id] = String(value).replace('.', ',')
+      out[p.id] = fmtInput(value)
     }
     return out
   })
@@ -184,7 +186,7 @@ function SlotEditor({
 
   return (
     <Modal
-      title={`${MEAL_ROW_LABELS[slotRef.meal]} · ${dayLabel(weekStart, slotRef.dayIdx)}`}
+      title={`${slotRef.meal === 'snack' ? '🍎 Snack' : MEAL_ROW_LABELS[slotRef.meal]} · ${dayLabel(weekStart, slotRef.dayIdx)}`}
       onClose={onClose}
     >
       <div className="space-y-4">
@@ -308,11 +310,11 @@ export function SemanaPage() {
   const [dragFrom, setDragFrom] = useState<SlotRef | null>(null)
   const [dropTarget, setDropTarget] = useState<{ dayIdx: number; meal: MealType } | null>(null)
   const [menu, setMenu] = useState<{ ref: SlotRef; x: number; y: number } | null>(null)
-  // Último autorrelleno: estado previo para Deshacer / Volver a proponer.
+  // Último autorrelleno: qué huecos rellenó y con qué receta, para deshacer o
+  // re-proponer SOLO eso, sin pisar las ediciones manuales posteriores.
   const [autoFill, setAutoFill] = useState<{
     weekId: string
-    before: WeekPlan
-    count: number
+    placed: { ref: SlotRef; recipeId: string }[]
   } | null>(null)
 
   useEffect(() => {
@@ -369,25 +371,39 @@ export function SemanaPage() {
     }))
   }
 
-  /** Rellena los huecos vacíos; con base, re-propone partiendo de ese estado. */
-  const handleAutoFill = (base?: WeekPlan) => {
+  /** Rellena los huecos vacíos; con reuse, re-propone solo lo que él rellenó. */
+  const handleAutoFill = (reuse = false) => {
     if (week === undefined) return
-    const start = base ?? week
+    const start =
+      reuse && autoFill !== null && autoFill.weekId === week.id
+        ? clearPlacedSlots(week, autoFill.placed)
+        : week
     const result = fillWeek(start, data.weeks, data.recipes, data.ingredients, data.persons)
     if (result.filled.length > 0) {
       update((d) => ({
         ...d,
-        weeks: d.weeks.map((w) => (w.id === week.id ? { ...result.week, id: week.id } : w)),
+        weeks: d.weeks.map((w) => (w.id === week.id ? result.week : w)),
       }))
+      setAutoFill({
+        weekId: week.id,
+        placed: result.filled.map((ref) => ({
+          ref,
+          recipeId: slotAt(result.week, ref)?.recipeId ?? '',
+        })),
+      })
+    } else if (!reuse && (autoFill === null || autoFill.weekId !== week.id)) {
+      // Sin huecos y sin propuesta previa que proteger: banner informativo.
+      setAutoFill({ weekId: week.id, placed: [] })
     }
-    setAutoFill({ weekId: week.id, before: start, count: result.filled.length })
   }
 
   const undoAutoFill = () => {
     if (autoFill === null) return
     update((d) => ({
       ...d,
-      weeks: d.weeks.map((w) => (w.id === autoFill.weekId ? autoFill.before : w)),
+      weeks: d.weeks.map((w) =>
+        w.id === autoFill.weekId ? clearPlacedSlots(w, autoFill.placed) : w,
+      ),
     }))
     setAutoFill(null)
   }
@@ -440,7 +456,7 @@ export function SemanaPage() {
       try {
         const imported = await fetchDemoBackup()
         const ok = window.confirm(
-          'Esto cargará la semana de ejemplo sustituyendo los datos actuales. ¿Continuar?',
+          'Esto sustituirá todos los datos actuales (personas, ingredientes, recetas y semanas) por la semana de ejemplo. ¿Continuar?',
         )
         if (ok) replaceAll(imported)
       } catch {
@@ -448,30 +464,26 @@ export function SemanaPage() {
       }
     }
     return (
-      <div className="rounded-2xl border border-dashed border-orange-200 bg-white/60 px-6 py-16 text-center">
-        <div className="text-4xl">📅</div>
-        <h2 className="mt-3 text-xl font-semibold text-stone-700">Aún no hay ninguna semana</h2>
-        <p className="mt-1 text-sm text-stone-500">
-          Crea la primera para empezar a planificar, o carga la semana de ejemplo para ver la app
-          llena.
-        </p>
-        <div className="mt-5 flex justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => addWeek(emptyWeek(nextWeekStart()))}
-            className="rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-orange-600"
-          >
-            Crear semana
-          </button>
-          <button
-            type="button"
-            onClick={() => void handleDemo()}
-            className="rounded-lg border border-orange-300 px-5 py-2.5 text-sm font-medium text-orange-700 hover:bg-orange-50"
-          >
-            ✨ Cargar semana de ejemplo
-          </button>
-        </div>
-      </div>
+      <EmptyState
+        icon="📅"
+        title="Aún no hay ninguna semana"
+        hint="Crea la primera para empezar a planificar, o carga la semana de ejemplo para ver la app llena."
+      >
+        <button
+          type="button"
+          onClick={() => addWeek(emptyWeek(nextWeekStart()))}
+          className="rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-orange-600"
+        >
+          Crear semana
+        </button>
+        <button
+          type="button"
+          onClick={() => void handleDemo()}
+          className="rounded-lg border border-orange-300 px-5 py-2.5 text-sm font-medium text-orange-700 hover:bg-orange-50"
+        >
+          ✨ Cargar semana de ejemplo
+        </button>
+      </EmptyState>
     )
   }
 
@@ -515,13 +527,13 @@ export function SemanaPage() {
           onDragEnd={handleDragEnd}
           onClick={() => setEditor(ref)}
           onContextMenu={(e) => openMenu(e, ref)}
-          className="w-full cursor-grab rounded-lg bg-orange-50 px-2 py-1.5 pr-5 text-left hover:bg-orange-100 active:cursor-grabbing"
+          className="w-full cursor-grab rounded-lg bg-orange-50 px-2 py-1.5 pr-6 text-left hover:bg-orange-100 active:cursor-grabbing"
           title={HAS_FINE_POINTER ? 'Arrastra para mover (con Ctrl, copia)' : undefined}
         >
           <span className="line-clamp-2 text-xs font-medium text-stone-700">
             {recipe?.name ?? '(receta borrada)'}
           </span>
-          <span className="text-[10px] text-stone-500">
+          <span className="text-[11px] text-stone-500">
             {fmtNum(slot.servings, slot.servings % 1 === 0 ? 0 : 1)} rac.
             {perKcal !== null && ` · ${fmtNum(perKcal)} kcal/rac.`}
           </span>
@@ -529,7 +541,7 @@ export function SemanaPage() {
         <button
           type="button"
           onClick={(e) => openMenu(e, ref)}
-          className="absolute top-0.5 right-0.5 rounded px-1 text-xs leading-4 text-stone-400 hover:bg-orange-200 hover:text-stone-600"
+          className="absolute top-0 right-0 rounded-lg px-1.5 py-1 text-xs leading-4 text-stone-400 hover:bg-orange-200 hover:text-stone-600"
           title="Cortar, copiar, pegar…"
         >
           ⋯
@@ -554,7 +566,7 @@ export function SemanaPage() {
           >
             ◀
           </button>
-          <h2 className="text-lg font-bold text-stone-800">{weekLabel(week.weekStart)}</h2>
+          <h2 className="text-xl font-bold text-stone-800">{weekLabel(week.weekStart)}</h2>
           <button
             type="button"
             disabled={weekIdx >= weeks.length - 1}
@@ -567,7 +579,7 @@ export function SemanaPage() {
         </div>
         {week.id === (data.activeWeekId ?? weeks[weeks.length - 1].id) ? (
           <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
-            🛒 semana activa
+            🛒 Semana activa
           </span>
         ) : (
           <button
@@ -624,23 +636,23 @@ export function SemanaPage() {
         <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-orange-200 bg-orange-50 px-4 py-2.5 text-sm text-stone-700">
           <span>
             ✨{' '}
-            {autoFill.count === 0
+            {autoFill.placed.length === 0
               ? 'No había huecos vacíos que rellenar.'
-              : `Se ${autoFill.count === 1 ? 'ha propuesto 1 plato' : `han propuesto ${autoFill.count} platos`} para los huecos vacíos.`}
+              : `Se ${autoFill.placed.length === 1 ? 'ha propuesto 1 plato' : `han propuesto ${autoFill.placed.length} platos`} para los huecos vacíos.`}
           </span>
-          {autoFill.count > 0 && (
+          {autoFill.placed.length > 0 && (
             <>
               <button
                 type="button"
                 onClick={undoAutoFill}
-                className="rounded-lg border border-orange-300 bg-white px-3 py-1 text-xs font-medium text-orange-700 hover:bg-orange-100"
+                className="rounded-lg border border-orange-300 bg-white px-3 py-1.5 text-xs font-medium text-orange-700 hover:bg-orange-100"
               >
                 Deshacer
               </button>
               <button
                 type="button"
-                onClick={() => handleAutoFill(autoFill.before)}
-                className="rounded-lg border border-orange-300 bg-white px-3 py-1 text-xs font-medium text-orange-700 hover:bg-orange-100"
+                onClick={() => handleAutoFill(true)}
+                className="rounded-lg border border-orange-300 bg-white px-3 py-1.5 text-xs font-medium text-orange-700 hover:bg-orange-100"
               >
                 Volver a proponer
               </button>
@@ -688,11 +700,11 @@ export function SemanaPage() {
                       <div className={`text-sm font-bold ${STATUS_TEXT[status]}`}>
                         {fmtNum(s.value)}
                       </div>
-                      <div className="text-[10px] text-stone-500">
+                      <div className="text-[11px] text-stone-500">
                         {s.label}
                         {target !== null && ` / ${fmtNum(target)}`}
                       </div>
-                      <div className="mt-0.5 text-[9px] text-stone-500">
+                      <div className="mt-0.5 text-[10px] text-stone-500">
                         sem. {fmtNum(s.total)}
                         {pct !== null && daysPlanned > 0 && (
                           <span className={STATUS_TEXT[status]}> · {fmtNum(pct)} %</span>
@@ -709,7 +721,7 @@ export function SemanaPage() {
                     <div className="bg-amber-300" style={{ width: `${split.carbs}%` }} />
                     <div className="bg-sky-300" style={{ width: `${split.fat}%` }} />
                   </div>
-                  <p className="mt-1 text-[10px] text-stone-500">
+                  <p className="mt-1 text-[11px] text-stone-500">
                     Reparto calórico:{' '}
                     <span className="text-rose-400">●</span> P {fmtNum(split.protein)} % ·{' '}
                     <span className="text-amber-400">●</span> H {fmtNum(split.carbs)} % ·{' '}
@@ -726,7 +738,7 @@ export function SemanaPage() {
         <table className="w-full min-w-220 table-fixed text-sm">
           <thead>
             <tr className="border-b border-orange-100">
-              <th className="w-24 px-3 py-2"></th>
+              <th className="sticky left-0 z-10 w-24 bg-white px-3 py-2"></th>
               {week.days.map((_, i) => (
                 <th key={i} className="px-2 py-2 text-xs font-semibold uppercase tracking-wide text-stone-500">
                   {dayLabel(week.weekStart, i)}
@@ -737,7 +749,7 @@ export function SemanaPage() {
           <tbody>
             {MAIN_MEALS.map((meal) => (
               <tr key={meal} className="border-b border-orange-50">
-                <th className="px-3 py-2 text-left text-xs font-medium text-stone-500 whitespace-nowrap">
+                <th className="sticky left-0 z-10 bg-white px-3 py-2 text-left text-xs font-medium text-stone-500 whitespace-nowrap">
                   {MEAL_ROW_LABELS[meal]}
                 </th>
                 {week.days.map((day, i) => (
@@ -752,7 +764,7 @@ export function SemanaPage() {
               </tr>
             ))}
             <tr className="border-b border-orange-50">
-              <th className="px-3 py-2 text-left text-xs font-medium text-stone-500">
+              <th className="sticky left-0 z-10 bg-white px-3 py-2 text-left text-xs font-medium text-stone-500">
                 {MEAL_ROW_LABELS.snack}
               </th>
               {week.days.map((day, i) => (
@@ -769,7 +781,7 @@ export function SemanaPage() {
               ))}
             </tr>
             <tr className="border-b border-orange-50 bg-orange-50/40">
-              <th className="px-3 py-2 text-left text-xs font-medium text-stone-500">Totales</th>
+              <th className="sticky left-0 z-10 bg-white px-3 py-2 text-left text-xs font-medium text-stone-500">Totales</th>
               {week.days.map((day, i) => (
                 <td key={i} className="px-1.5 py-2 text-center align-top">
                   {!dayIsPlanned(day) ? (
@@ -792,7 +804,7 @@ export function SemanaPage() {
                             >
                               {p.name.slice(0, 3)} {fmtNum(macros.kcal)}
                             </div>
-                            <div className="mt-0.5 text-[9px] leading-tight text-stone-500">
+                            <div className="mt-0.5 text-[10px] leading-tight text-stone-500">
                               P {fmtNum(macros.protein)} · H {fmtNum(macros.carbs)} · G{' '}
                               {fmtNum(macros.fat)}
                             </div>
@@ -805,7 +817,7 @@ export function SemanaPage() {
               ))}
             </tr>
             <tr>
-              <th className="px-3 py-2 text-left text-xs font-medium text-stone-500">📝 Nota</th>
+              <th className="sticky left-0 z-10 bg-white px-3 py-2 text-left text-xs font-medium text-stone-500">📝 Nota</th>
               {week.days.map((day, i) => (
                 <td key={i} className="px-1.5 py-1.5 align-top">
                   <input

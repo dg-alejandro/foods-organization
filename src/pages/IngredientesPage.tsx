@@ -4,8 +4,9 @@ import { newId } from '../data/storage'
 import { CATEGORIES, CATEGORY_LABELS } from '../data/types'
 import type { Category, Ingredient, Unit } from '../data/types'
 import { displayPrice, priceIsStale } from '../lib/nutrition'
-import { fmtEuro, fmtNum, normalizeSearch, parseNum } from '../lib/format'
+import { fmtEuro, fmtInput, fmtNum, normalizeSearch, parseNum } from '../lib/format'
 import { Modal } from '../components/Modal'
+import { EmptyState } from '../components/EmptyState'
 
 const UNIT_LABELS: Record<Unit, string> = { g: 'gramos (g)', ml: 'mililitros (ml)', ud: 'unidades' }
 const PACK_SIZE_SUFFIX: Record<Unit, string> = { g: 'g', ml: 'ml', ud: 'ud' }
@@ -23,7 +24,7 @@ interface FormState {
 }
 
 function toForm(ing?: Ingredient): FormState {
-  const numStr = (n?: number) => (n === undefined ? '' : String(n).replace('.', ','))
+  const numStr = (n?: number) => (n === undefined ? '' : fmtInput(n))
   return {
     name: ing?.name ?? '',
     category: ing?.category ?? 'despensa',
@@ -74,6 +75,8 @@ function IngredientForm({
     const hasPrice = price !== null && price > 0 && size !== null && size > 0
     const priceChanged = prev === undefined || prev.packPrice !== price || prev.packSize !== size
     return {
+      // Conservar campos opcionales que el formulario no gestiona (fiber100…).
+      ...prev,
       id: prev?.id ?? newId(),
       name: f.name.trim(),
       category: f.category,
@@ -308,15 +311,19 @@ export function IngredientesPage() {
             onClick={() => setEditing('new')}
             className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-600"
           >
-            + Nuevo
+            + Nuevo ingrediente
           </button>
         </div>
       </div>
 
       {filtered.length === 0 ? (
-        <p className="mt-10 text-center text-stone-500">
-          No hay ingredientes que coincidan con la búsqueda.
-        </p>
+        <div className="mt-4">
+          <EmptyState
+            icon="🥕"
+            title="Ningún ingrediente coincide"
+            hint="Prueba a cambiar la búsqueda o la categoría."
+          />
+        </div>
       ) : (
         <div className="mt-4 overflow-x-auto rounded-2xl border border-orange-100 bg-white shadow-sm">
           <table className="w-full min-w-160 text-sm">
@@ -374,7 +381,7 @@ export function IngredientesPage() {
                       <button
                         type="button"
                         onClick={() => setEditing(ing)}
-                        className="rounded px-2 py-1 text-stone-400 hover:bg-orange-100 hover:text-stone-600"
+                        className="rounded-lg px-2.5 py-1.5 text-stone-400 hover:bg-orange-100 hover:text-stone-600"
                         title="Editar"
                       >
                         ✏️
@@ -382,7 +389,7 @@ export function IngredientesPage() {
                       <button
                         type="button"
                         onClick={() => handleDelete(ing)}
-                        className="rounded px-2 py-1 text-stone-400 hover:bg-red-50 hover:text-red-600"
+                        className="rounded-lg px-2.5 py-1.5 text-stone-400 hover:bg-red-50 hover:text-red-600"
                         title="Borrar"
                       >
                         🗑️

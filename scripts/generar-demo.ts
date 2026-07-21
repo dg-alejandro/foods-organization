@@ -39,7 +39,7 @@ const PRICES: [string, number, number][] = [
   ['Pimiento rojo', 2.2, 1000],
   ['Tomate frito', 0.85, 400],
   ['Pasta', 1.05, 500],
-  ['Atún en lata (escurrido)', 2.5, 156],
+  ['Atún en lata en aceite (escurrido)', 2.5, 156],
   ['Ternera magra', 9.5, 1000],
   ['Salteado de verduras congelado', 1.8, 750],
   ['Arroz', 1.15, 1000],
@@ -175,7 +175,7 @@ const R = {
     2,
     [
       ['Pasta', 200],
-      ['Atún en lata (escurrido)', 120],
+      ['Atún en lata en aceite (escurrido)', 120],
       ['Tomate frito', 200],
       ['Cebolla', 100],
       ['Aceite de oliva virgen extra', 20],

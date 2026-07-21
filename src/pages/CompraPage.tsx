@@ -9,19 +9,10 @@ import { aggregateWeek, groupByCategory, shoppingTotals } from '../lib/shopping'
 import type { ShoppingLine } from '../lib/shopping'
 import { weekLabel } from '../lib/dates'
 import { fmtEuro, fmtInput, fmtNum, parseNum } from '../lib/format'
-
-function EmptyState({ title, hint }: { title: string; hint: string }) {
-  return (
-    <div className="rounded-2xl border border-dashed border-orange-200 bg-white/60 px-6 py-16 text-center">
-      <div className="text-4xl">🛒</div>
-      <h2 className="mt-3 text-xl font-semibold text-stone-700">{title}</h2>
-      <p className="mt-1 text-sm text-stone-500">{hint}</p>
-    </div>
-  )
-}
+import { EmptyState } from '../components/EmptyState'
 
 const qtyInputCls =
-  'w-16 rounded border border-transparent px-1 py-0.5 text-right text-sm text-stone-600 hover:border-stone-200 focus:border-orange-400 focus:outline-none'
+  'w-16 rounded border border-transparent px-1 py-1 text-right text-sm text-stone-600 hover:border-stone-200 focus:border-orange-400 focus:outline-none'
 
 export function CompraPage() {
   const { data, update } = useAppStore()
@@ -46,6 +37,7 @@ export function CompraPage() {
   if (week === undefined) {
     return (
       <EmptyState
+        icon="🛒"
         title="No hay ninguna semana activa"
         hint="Crea una semana en la pestaña Semana para generar la lista de la compra."
       />
@@ -131,6 +123,7 @@ export function CompraPage() {
       {lines.length === 0 && week.shopping.extras.length === 0 ? (
         <div className="mt-4">
           <EmptyState
+            icon="🛒"
             title="La semana activa no tiene comidas planificadas"
             hint="Asigna recetas en la pestaña Semana y la lista se generará sola."
           />
@@ -148,7 +141,7 @@ export function CompraPage() {
                 </h3>
                 <table className="mt-1 w-full text-sm">
                   <thead>
-                    <tr className="text-[10px] uppercase tracking-wide text-stone-300">
+                    <tr className="text-[11px] uppercase tracking-wide text-stone-400">
                       <th className="py-1 text-left font-semibold" colSpan={2}></th>
                       <th className="py-1 text-right font-semibold">Necesario</th>
                       <th className="py-1 text-right font-semibold">En casa</th>
@@ -186,7 +179,15 @@ export function CompraPage() {
                               type="text"
                               inputMode="decimal"
                               defaultValue={fmtInput(line.neededQty)}
-                              onBlur={(e) => setNeeded(line, e.target.value)}
+                              onBlur={(e) => {
+                                const raw = e.target.value.trim()
+                                if (raw !== '' && parseNum(raw) === null) {
+                                  // Entrada no válida: repintar el valor real y no guardar.
+                                  e.target.value = fmtInput(line.neededQty)
+                                  return
+                                }
+                                setNeeded(line, e.target.value)
+                              }}
                               className={qtyInputCls}
                               title={
                                 line.neededQty !== line.computedQty
@@ -206,7 +207,11 @@ export function CompraPage() {
                               onBlur={(e) => {
                                 const raw = e.target.value.trim()
                                 const n = raw === '' ? 0 : parseNum(raw)
-                                if (n !== null) setAtHome(line, n)
+                                if (n === null) {
+                                  e.target.value = line.atHomeQty === 0 ? '' : fmtInput(line.atHomeQty)
+                                  return
+                                }
+                                setAtHome(line, n)
                               }}
                               className={qtyInputCls}
                             />
@@ -239,7 +244,7 @@ export function CompraPage() {
                                   ? 'Quitar el descuento de despensa'
                                   : 'Lo tengo todo en casa'
                               }
-                              className={`rounded-lg px-1.5 py-0.5 text-sm ${
+                              className={`rounded-lg px-2 py-1 text-sm ${
                                 fullAtHome ? 'bg-stone-200' : 'hover:bg-orange-100'
                               }`}
                             >
@@ -298,7 +303,7 @@ export function CompraPage() {
                           }))
                         }
                         title="Quitar"
-                        className="shrink-0 rounded px-1.5 py-0.5 text-stone-400 hover:bg-red-50 hover:text-red-600"
+                        className="shrink-0 rounded-lg px-2 py-1 text-stone-400 hover:bg-red-50 hover:text-red-600"
                       >
                         ✕
                       </button>

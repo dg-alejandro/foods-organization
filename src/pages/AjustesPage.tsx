@@ -3,7 +3,8 @@ import { useAppStore } from '../data/store'
 import { exportBackup, importBackup } from '../data/storage'
 import { fetchDemoBackup } from '../lib/demo'
 import { downloadFile } from '../lib/download'
-import { parseNum } from '../lib/format'
+import { refreshSeedNutrition } from '../data/seed'
+import { fmtInput, parseNum } from '../lib/format'
 import type { MacroTargets, Person } from '../data/types'
 
 const TARGET_FIELDS: { key: keyof MacroTargets; label: string; suffix: string }[] = [
@@ -49,9 +50,10 @@ function PersonCard({ person }: { person: Person }) {
             <span className="text-sm text-stone-600">{f.label}</span>
             <div className="mt-1 flex items-center gap-2">
               <input
+                key={`${person.id}-${f.key}-${targets[f.key]}`}
                 type="text"
                 inputMode="decimal"
-                defaultValue={targets[f.key] > 0 ? String(targets[f.key]).replace('.', ',') : ''}
+                defaultValue={targets[f.key] > 0 ? fmtInput(targets[f.key]) : ''}
                 onBlur={(e) => {
                   const n = parseNum(e.target.value)
                   updatePerson({ targets: { ...targets, [f.key]: n !== null && n > 0 ? n : 0 } })
@@ -99,7 +101,9 @@ function InstallCard() {
   const handleInstall = async () => {
     if (installEvent === null) return
     await installEvent.prompt()
-    setInstallEvent(null)
+    const choice = await installEvent.userChoice
+    // Con «ahora no», el navegador no reemite el evento: conservarlo para reintentar.
+    if (choice.outcome === 'accepted') setInstallEvent(null)
   }
 
   return (
@@ -150,7 +154,7 @@ function DemoCard() {
     try {
       const imported = await fetchDemoBackup()
       const ok = window.confirm(
-        'Esto sustituirá TODOS los datos actuales (personas, ingredientes, recetas y semanas) por la semana de ejemplo. ¿Continuar?',
+        'Esto sustituirá todos los datos actuales (personas, ingredientes, recetas y semanas) por la semana de ejemplo. ¿Continuar?',
       )
       if (!ok) return
       replaceAll(imported)
@@ -186,6 +190,49 @@ function DemoCard() {
   )
 }
 
+function BancoCard() {
+  const { data, update } = useAppStore()
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null)
+
+  const handleRefresh = () => {
+    const { updated } = refreshSeedNutrition(data)
+    if (updated === 0) {
+      setMessage({ kind: 'ok', text: 'Todo el banco base ya está al día.' })
+      return
+    }
+    update((d) => refreshSeedNutrition(d).data)
+    setMessage({
+      kind: 'ok',
+      text: `${updated} ${updated === 1 ? 'ingrediente actualizado' : 'ingredientes actualizados'}. Precios y recetas intactos.`,
+    })
+  }
+
+  return (
+    <div className="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm">
+      <h3 className="font-semibold text-stone-700">Banco de ingredientes</h3>
+      <p className="mt-1 text-sm text-stone-500">
+        Pone al día los valores nutricionales de los ingredientes del banco base según la última
+        revisión (yogur por unidad, aceite por ml, atún fresco…). No toca tus precios ni tus
+        recetas, y los ingredientes creados por ti no se modifican.
+      </p>
+      <div className="mt-4">
+        <button
+          type="button"
+          onClick={handleRefresh}
+          className="rounded-lg border border-orange-300 px-4 py-2 text-sm font-medium text-orange-700 hover:bg-orange-50"
+        >
+          Actualizar valores nutricionales
+        </button>
+      </div>
+      {message !== null && (
+        <p className={`mt-3 text-sm ${message.kind === 'ok' ? 'text-green-700' : 'text-red-600'}`}>
+          {message.text}
+        </p>
+      )}
+    </div>
+  )
+}
+
 function BackupCard() {
   const { data, replaceAll } = useAppStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -201,7 +248,7 @@ function BackupCard() {
     try {
       const imported = importBackup(await file.text())
       const ok = window.confirm(
-        'Esto sustituirá TODOS los datos actuales por los de la copia. ¿Continuar?',
+        'Esto sustituirá todos los datos actuales por los de la copia. ¿Continuar?',
       )
       if (!ok) return
       replaceAll(imported)
@@ -279,6 +326,7 @@ export function AjustesPage() {
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <BackupCard />
           <DemoCard />
+          <BancoCard />
         </div>
       </section>
 

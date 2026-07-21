@@ -10,9 +10,10 @@ import {
   recipeMacrosPerServing,
   scaleMacros,
 } from '../lib/nutrition'
-import { fmtEuro, fmtNum, normalizeSearch, parseNum } from '../lib/format'
+import { fmtEuro, fmtInput, fmtNum, normalizeSearch, parseNum } from '../lib/format'
 import { daySlots, removeRecipeFromDay } from '../lib/planner'
 import { Modal } from '../components/Modal'
+import { EmptyState } from '../components/EmptyState'
 
 const inputCls =
   'mt-1 w-full rounded-lg border border-stone-200 px-3 py-2 focus:border-orange-400 focus:outline-none'
@@ -43,10 +44,10 @@ function toForm(r?: Recipe): FormState {
   return {
     name: r?.name ?? '',
     mealType: r?.mealType ?? 'almuerzo',
-    servings: String(r?.servings ?? 2),
+    servings: fmtInput(r?.servings ?? 2),
     items: (r?.items ?? []).map((it) => ({
       ingredientId: it.ingredientId,
-      qty: String(it.qty).replace('.', ','),
+      qty: fmtInput(it.qty),
     })),
     steps: (r?.steps ?? []).join('\n'),
     tags: (r?.tags ?? []).join(', '),
@@ -540,19 +541,26 @@ export function RecetasPage() {
             onClick={() => setEditing('new')}
             className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-600"
           >
-            + Nueva
+            + Nueva receta
           </button>
         </div>
       </div>
 
       {filtered.length === 0 ? (
-        <div className="mt-10 rounded-2xl border border-dashed border-orange-200 bg-white/60 px-6 py-14 text-center">
-          <div className="text-4xl">🍳</div>
-          <p className="mt-3 text-stone-600">
-            {data.recipes.length === 0
-              ? 'Aún no hay recetas. Crea la primera con «+ Nueva».'
-              : 'Ninguna receta coincide con los filtros.'}
-          </p>
+        <div className="mt-4">
+          {data.recipes.length === 0 ? (
+            <EmptyState
+              icon="🍳"
+              title="Aún no hay recetas"
+              hint="Crea la primera con «+ Nueva receta»."
+            />
+          ) : (
+            <EmptyState
+              icon="🍳"
+              title="Ninguna receta coincide"
+              hint="Prueba a cambiar la búsqueda o los filtros."
+            />
+          )}
         </div>
       ) : (
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -611,7 +619,7 @@ export function RecetasPage() {
                     <button
                       type="button"
                       onClick={() => setEditing(r)}
-                      className="rounded px-2 py-1 text-sm text-stone-400 hover:bg-orange-100 hover:text-stone-600"
+                      className="rounded-lg px-2.5 py-1.5 text-sm text-stone-400 hover:bg-orange-100 hover:text-stone-600"
                       title="Editar"
                     >
                       ✏️
@@ -619,15 +627,15 @@ export function RecetasPage() {
                     <button
                       type="button"
                       onClick={() => handleDuplicate(r)}
-                      className="rounded px-2 py-1 text-sm text-stone-400 hover:bg-orange-100 hover:text-stone-600"
+                      className="rounded-lg px-2.5 py-1.5 text-sm text-stone-400 hover:bg-orange-100 hover:text-stone-600"
                       title="Duplicar"
                     >
-                      📋
+                      📑
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDelete(r)}
-                      className="rounded px-2 py-1 text-sm text-stone-400 hover:bg-red-50 hover:text-red-600"
+                      className="rounded-lg px-2.5 py-1.5 text-sm text-stone-400 hover:bg-red-50 hover:text-red-600"
                       title="Borrar"
                     >
                       🗑️

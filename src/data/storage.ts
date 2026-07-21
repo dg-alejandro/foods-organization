@@ -225,5 +225,7 @@ export function importBackup(json: string): AppData {
   if (normalized === null) {
     throw new Error('El archivo no parece una copia de seguridad de esta aplicación.')
   }
-  return normalized
+  // Mismo tratamiento que loadData: si no, una copia sin `seeded` mostraría
+  // un banco distinto antes y después de recargar.
+  return withSeed(normalized)
 }
