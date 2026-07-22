@@ -5,6 +5,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // La app se sirve en GitHub Pages bajo /foods-organization/
+  base: '/foods-organization/',
   plugins: [
     react(),
     tailwindcss(),
@@ -23,7 +25,7 @@ export default defineConfig({
         lang: 'es',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/',
+        // start_url y scope los deriva el plugin del `base`
         background_color: '#f8f7f2',
         theme_color: '#4f6551',
         icons: [
