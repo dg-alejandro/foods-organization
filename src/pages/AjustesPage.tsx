@@ -233,6 +233,58 @@ function BancoCard() {
   )
 }
 
+function ResetCard() {
+  const { data, update } = useAppStore()
+  const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null)
+
+  const handleReset = () => {
+    const ok = window.confirm(
+      `Se eliminarán ${data.recipes.length} ${data.recipes.length === 1 ? 'receta' : 'recetas'}, ` +
+        `${data.weeks.length} ${data.weeks.length === 1 ? 'semana' : 'semanas'} y todos los precios. ` +
+        'Se conservan los ingredientes, las personas y sus objetivos. ¿Continuar?',
+    )
+    if (!ok) return
+    update((d) => ({
+      ...d,
+      recipes: [],
+      weeks: [],
+      activeWeekId: null,
+      ingredients: d.ingredients.map((i) => ({
+        ...i,
+        packPrice: undefined,
+        packSize: undefined,
+        priceUpdatedAt: undefined,
+      })),
+    }))
+    setMessage({ kind: 'ok', text: 'Datos limpiados: solo quedan los ingredientes.' })
+  }
+
+  return (
+    <div className="rounded-2xl border border-orange-100 bg-white p-5 shadow-sm">
+      <h3 className="font-semibold text-stone-700">Empezar de cero</h3>
+      <p className="mt-1 text-sm text-stone-500">
+        Borra las recetas, las semanas planificadas y los precios para empezar con el banco de
+        ingredientes limpio. Las personas y sus objetivos no se tocan. Si quieres conservar algo,
+        exporta antes una copia de seguridad.
+      </p>
+      <div className="mt-4">
+        <button
+          type="button"
+          onClick={handleReset}
+          className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+        >
+          Vaciar recetas, semanas y precios
+        </button>
+      </div>
+      {message !== null && (
+        <p className={`mt-3 text-sm ${message.kind === 'ok' ? 'text-green-700' : 'text-red-600'}`}>
+          {message.text}
+        </p>
+      )}
+    </div>
+  )
+}
+
 function BackupCard() {
   const { data, replaceAll } = useAppStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -327,6 +379,7 @@ export function AjustesPage() {
           <BackupCard />
           <DemoCard />
           <BancoCard />
+          <ResetCard />
         </div>
       </section>
 
