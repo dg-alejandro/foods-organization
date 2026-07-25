@@ -10,6 +10,7 @@ import type { ShoppingLine } from '../lib/shopping'
 import { weekLabel } from '../lib/dates'
 import { fmtEuro, fmtInput, fmtNum, parseNum } from '../lib/format'
 import { EmptyState } from '../components/EmptyState'
+import { IconHome } from '../components/icons'
 
 const qtyInputCls =
   'w-16 rounded border border-transparent px-1 py-1 text-right text-sm text-stone-600 hover:border-stone-200 focus:border-orange-400 focus:outline-none'
@@ -37,7 +38,6 @@ export function CompraPage() {
   if (week === undefined) {
     return (
       <EmptyState
-        icon="🛒"
         title="No hay ninguna semana activa"
         hint="Crea una semana en la pestaña Semana para generar la lista de la compra."
       />
@@ -123,7 +123,6 @@ export function CompraPage() {
       {lines.length === 0 && week.shopping.extras.length === 0 ? (
         <div className="mt-4">
           <EmptyState
-            icon="🛒"
             title="La semana activa no tiene comidas planificadas"
             hint="Asigna recetas en la pestaña Semana y la lista se generará sola."
           />
@@ -219,7 +218,7 @@ export function CompraPage() {
                           </td>
                           <td className="py-2 text-right font-semibold whitespace-nowrap text-stone-700">
                             {covered ? (
-                              <span className="font-normal text-stone-400">nada 🎉</span>
+                              <span className="font-normal text-stone-400">nada</span>
                             ) : (
                               `${fmtNum(line.toBuyQty, line.toBuyQty % 1 === 0 ? 0 : 1)} ${line.unit}`
                             )}
@@ -247,8 +246,13 @@ export function CompraPage() {
                               className={`rounded-lg px-2 py-1 text-sm ${
                                 fullAtHome ? 'bg-stone-200' : 'hover:bg-orange-100'
                               }`}
+                              aria-label={
+                                fullAtHome
+                                  ? 'Quitar el descuento de despensa'
+                                  : 'Lo tengo todo en casa'
+                              }
                             >
-                              🏠
+                              <IconHome className="size-4" />
                             </button>
                           </td>
                         </tr>
@@ -305,7 +309,7 @@ export function CompraPage() {
                         title="Quitar"
                         className="shrink-0 rounded-lg px-2 py-1 text-stone-400 hover:bg-red-50 hover:text-red-600"
                       >
-                        ✕
+                        ×
                       </button>
                     </li>
                   ))}
@@ -363,7 +367,6 @@ export function CompraPage() {
               )}
               {totals.linesWithoutPrice > 0 && (
                 <p className="mt-2 text-xs text-amber-700">
-                  ⚠️{' '}
                   {totals.linesWithoutPrice === 1
                     ? '1 línea sin precio no cuenta en el total.'
                     : `${totals.linesWithoutPrice} líneas sin precio no cuentan en el total.`}{' '}

@@ -36,8 +36,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.error === null) return this.props.children
     return (
       <div className="mx-auto mt-16 max-w-md rounded-2xl border border-orange-100 bg-white p-6 text-center shadow-sm">
-        <div className="text-4xl">🥲</div>
-        <h1 className="mt-3 text-xl font-bold text-stone-800">Algo ha salido mal</h1>
+        <h1 className="text-xl font-bold text-stone-800">Algo ha salido mal</h1>
         <p className="mt-2 text-sm text-stone-500">
           La aplicación se ha encontrado con un error inesperado. Tus datos siguen guardados en
           este dispositivo; puedes descargar una copia por si acaso y recargar.

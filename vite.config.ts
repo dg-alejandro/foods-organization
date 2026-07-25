@@ -26,8 +26,8 @@ export default defineConfig({
         display: 'standalone',
         orientation: 'portrait',
         // start_url y scope los deriva el plugin del `base`
-        background_color: '#f8f7f2',
-        theme_color: '#4f6551',
+        background_color: '#f9f6f2',
+        theme_color: '#7c4d63',
         icons: [
           { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },

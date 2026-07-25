@@ -14,6 +14,7 @@ import { fmtEuro, fmtInput, fmtNum, normalizeSearch, parseNum } from '../lib/for
 import { daySlots, removeRecipeFromDay } from '../lib/planner'
 import { Modal } from '../components/Modal'
 import { EmptyState } from '../components/EmptyState'
+import { IconCopy, IconPencil, IconTrash } from '../components/icons'
 
 const inputCls =
   'mt-1 w-full rounded-lg border border-stone-200 px-3 py-2 focus:border-orange-400 focus:outline-none'
@@ -285,7 +286,7 @@ function RecipeForm({
                   className="shrink-0 rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-600 hover:bg-stone-50"
                   title="Quitar foto"
                 >
-                  ✕
+                  ×
                 </button>
               )}
               <input
@@ -348,7 +349,7 @@ function RecipeForm({
                         className="rounded px-1.5 py-1 text-stone-400 hover:bg-red-50 hover:text-red-600"
                         title="Quitar"
                       >
-                        ✕
+                        ×
                       </button>
                     </div>
                   )
@@ -376,7 +377,7 @@ function RecipeForm({
                       className="rounded px-1.5 py-1 text-stone-400 hover:bg-red-50 hover:text-red-600"
                       title="Quitar"
                     >
-                      ✕
+                      ×
                     </button>
                   </div>
                 )
@@ -398,7 +399,7 @@ function RecipeForm({
             </p>
             {cost.missingPrices.length > 0 && (
               <p className="mt-1 text-xs text-amber-700">
-                ⚠️ Sin precio: {cost.missingPrices.join(', ')}. El coste real será mayor.
+                Sin precio: {cost.missingPrices.join(', ')}. El coste real será mayor.
               </p>
             )}
           </div>
@@ -550,13 +551,11 @@ export function RecetasPage() {
         <div className="mt-4">
           {data.recipes.length === 0 ? (
             <EmptyState
-              icon="🍳"
               title="Aún no hay recetas"
               hint="Crea la primera con «+ Nueva receta»."
             />
           ) : (
             <EmptyState
-              icon="🍳"
               title="Ninguna receta coincide"
               hint="Prueba a cambiar la búsqueda o los filtros."
             />
@@ -596,7 +595,6 @@ export function RecetasPage() {
                         title={`Sin precio: ${cost.missingPrices.join(', ')}`}
                         className="ml-1 cursor-help text-amber-600"
                       >
-                        ⚠️{' '}
                         {cost.missingPrices.length === 1
                           ? 'falta 1 precio'
                           : `faltan ${cost.missingPrices.length} precios`}
@@ -621,24 +619,27 @@ export function RecetasPage() {
                       onClick={() => setEditing(r)}
                       className="rounded-lg px-2.5 py-1.5 text-sm text-stone-400 hover:bg-orange-100 hover:text-stone-600"
                       title="Editar"
+                      aria-label="Editar"
                     >
-                      ✏️
+                      <IconPencil className="size-4" />
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDuplicate(r)}
                       className="rounded-lg px-2.5 py-1.5 text-sm text-stone-400 hover:bg-orange-100 hover:text-stone-600"
                       title="Duplicar"
+                      aria-label="Duplicar"
                     >
-                      📑
+                      <IconCopy className="size-4" />
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDelete(r)}
                       className="rounded-lg px-2.5 py-1.5 text-sm text-stone-400 hover:bg-red-50 hover:text-red-600"
                       title="Borrar"
+                      aria-label="Borrar"
                     >
-                      🗑️
+                      <IconTrash className="size-4" />
                     </button>
                   </div>
                 </div>

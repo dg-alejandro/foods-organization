@@ -56,24 +56,26 @@
   --font-display: 'Fraunces Variable', Georgia, serif;
 
   /*
-   * Paleta "botánica": marfil, salvia y verde bosque.
+   * Paleta "ciruela y lino": fondo lino claro con acentos ciruela/berenjena.
    * Sustituye a la escala orange por defecto para reteñir toda la app
    * sin tocar las clases de los componentes.
    */
-  --color-orange-50: #f8f7f2;
-  --color-orange-100: #eae8dc;
-  --color-orange-200: #d6d4c0;
-  --color-orange-300: #b0b297;
-  --color-orange-400: #83906f;
-  --color-orange-500: #4f6551;
-  --color-orange-600: #3d5142;
-  --color-orange-700: #324237;
-  --color-orange-800: #2a372e;
-  --color-orange-900: #222c25;
+  --color-orange-50: #f9f6f2;
+  --color-orange-100: #efe7e1;
+  --color-orange-200: #ddcfd0;
+  --color-orange-300: #bfa3ab;
+  --color-orange-400: #9b7386;
+  --color-orange-500: #7c4d63;
+  --color-orange-600: #653a50;
+  --color-orange-700: #513041;
+  --color-orange-800: #422736;
+  --color-orange-900: #35202c;
 }
 
 body {
   @apply bg-orange-50 text-stone-800 antialiased;
+  /* Sin desbordamiento horizontal: evita el zoom-out en móvil */
+  overflow-x: hidden;
 }
 
 @layer base {

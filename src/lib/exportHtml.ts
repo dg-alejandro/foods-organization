@@ -12,13 +12,6 @@ import {
 } from './planner'
 import { aggregateWeek, groupByCategory, shoppingTotals } from './shopping'
 
-const MEAL_ICONS: Record<string, string> = {
-  desayuno: '🥐',
-  almuerzo: '🍲',
-  cena: '🌙',
-  snack: '🍎',
-}
-
 function esc(text: string): string {
   return text
     .replaceAll('&', '&amp;')
@@ -36,7 +29,7 @@ export function buildWeekExportHtml(data: AppData, week: WeekPlan): string {
   const ingredientsById = ingredientMap(data.ingredients)
   const personCount = data.persons.length
 
-  const slotLine = (icon: string, label: string, slot: MealSlot): string => {
+  const slotLine = (label: string, slot: MealSlot): string => {
     const recipe = recipesById.get(slot.recipeId)
     const name = recipe?.name ?? '(receta borrada)'
     const rac = fmtNum(slot.servings, slot.servings % 1 === 0 ? 0 : 1)
@@ -48,7 +41,7 @@ export function buildWeekExportHtml(data: AppData, week: WeekPlan): string {
         : ` · ${data.persons
             .map((p) => `${esc(p.name.slice(0, 3))} ${fmtNum(per[p.id] ?? 0, (per[p.id] ?? 0) % 1 === 0 ? 0 : 1)}`)
             .join(' / ')}`
-    return `<li><span class="icon">${icon}</span><span class="meal">${esc(label)}</span><span class="dish">${esc(name)}</span><span class="rac">${rac} rac.${split}</span></li>`
+    return `<li><span class="meal">${esc(label)}</span><span class="dish">${esc(name)}</span><span class="rac">${rac} rac.${split}</span></li>`
   }
 
   const dayCards = week.days
@@ -57,10 +50,10 @@ export function buildWeekExportHtml(data: AppData, week: WeekPlan): string {
       const lines: string[] = []
       for (const meal of MAIN_MEALS) {
         const slot = day[meal]
-        if (slot !== undefined) lines.push(slotLine(MEAL_ICONS[meal], MEAL_TYPE_LABELS[meal], slot))
+        if (slot !== undefined) lines.push(slotLine(MEAL_TYPE_LABELS[meal], slot))
       }
       for (const snack of day.snacks ?? []) {
-        lines.push(slotLine(MEAL_ICONS.snack, 'Snack', snack))
+        lines.push(slotLine('Snack', snack))
       }
       const persons = !dayIsPlanned(day)
         ? ''
@@ -72,7 +65,7 @@ export function buildWeekExportHtml(data: AppData, week: WeekPlan): string {
             .join('')}</div>`
       return `<article class="card day">
   <h3>${DAY_NAMES[i]} ${date.getDate()}</h3>
-  ${day.note !== undefined ? `<p class="note">📝 ${esc(day.note)}</p>` : ''}
+  ${day.note !== undefined ? `<p class="note">${esc(day.note)}</p>` : ''}
   ${lines.length > 0 ? `<ul class="meals">${lines.join('')}</ul>` : '<p class="empty">Sin comidas planificadas.</p>'}
   ${persons}
 </article>`
@@ -131,7 +124,7 @@ export function buildWeekExportHtml(data: AppData, week: WeekPlan): string {
           ? `<ol class="steps">${r.steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>`
           : ''
       return `<article class="card recipe">
-  <h3>${MEAL_ICONS[r.mealType]} ${esc(r.name)}</h3>
+  <h3>${esc(r.name)}</h3>
   <p class="meta">${MEAL_TYPE_LABELS[r.mealType]} · ${fmtNum(r.servings, r.servings % 1 === 0 ? 0 : 1)} raciones · ${fmtNum(per.kcal)} kcal/rac. (P ${fmtNum(per.protein)} · H ${fmtNum(per.carbs)} · G ${fmtNum(per.fat)})</p>
   <ul class="ings">${items}</ul>
   ${steps}
@@ -148,7 +141,7 @@ export function buildWeekExportHtml(data: AppData, week: WeekPlan): string {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(weekLabel(week.weekStart))}</title>
 <style>
-:root{--terra:#4f6551;--terra-dark:#324237;--cream:#f8f7f2;--ink:#3b3a36;--muted:#a29e94;--line:#eae8dc}
+:root{--terra:#7c4d63;--terra-dark:#513041;--cream:#f9f6f2;--ink:#3b3640;--muted:#a2989c;--line:#efe7e1}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:6.5rem}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--cream);color:var(--ink);padding-bottom:3rem}
@@ -156,11 +149,11 @@ header{position:sticky;top:0;background:rgba(255,255,255,.85);backdrop-filter:bl
 header h1{font-family:Georgia,'Times New Roman',serif;font-size:1.05rem;color:var(--terra-dark)}
 header p{font-size:.75rem;color:var(--muted)}
 nav{display:flex;gap:.4rem;margin-top:.5rem}
-nav a{flex:1;text-align:center;text-decoration:none;border-radius:999px;padding:.45rem .6rem;font-size:.85rem;font-weight:600;background:#e6e4d6;color:var(--ink)}
+nav a{flex:1;text-align:center;text-decoration:none;border-radius:999px;padding:.45rem .6rem;font-size:.85rem;font-weight:600;background:#ece3e6;color:var(--ink)}
 main{max-width:640px;margin:0 auto;padding:1rem}
 section.tab>h2{font-family:Georgia,'Times New Roman',serif;font-size:1.2rem;color:var(--terra-dark);margin:1.4rem 0 .7rem;padding-bottom:.3rem;border-bottom:2px solid var(--line)}
 section.tab:first-of-type>h2{margin-top:.2rem}
-.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:.9rem 1rem;margin-bottom:.8rem;box-shadow:0 2px 8px rgb(34 44 37 / .06)}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:.9rem 1rem;margin-bottom:.8rem;box-shadow:0 2px 8px rgb(53 32 44 / .06)}
 .card h3{font-family:Georgia,serif;font-size:1rem;color:var(--terra-dark);margin-bottom:.4rem}
 .note{font-size:.8rem;font-style:italic;color:var(--muted);margin-bottom:.3rem}
 .empty{font-size:.8rem;color:var(--muted)}
@@ -179,7 +172,7 @@ ul{list-style:none}
 .shop input:checked ~ .name{text-decoration:line-through;color:var(--muted)}
 .shop .qty{font-size:.75rem;color:var(--muted);flex:none}
 .shop .price{font-size:.8rem;color:var(--ink);flex:none;min-width:3.4rem;text-align:right}
-.total-card{background:linear-gradient(135deg,var(--terra),#324237);color:#fff;border:0}
+.total-card{background:linear-gradient(135deg,var(--terra),#513041);color:#fff;border:0}
 .total-card h3{color:#fff}
 .total-card .big{font-size:1.7rem;font-weight:800}
 .total-card p{font-size:.72rem;opacity:.85;margin-top:.25rem}
@@ -198,29 +191,29 @@ ul{list-style:none}
 </head>
 <body>
 <header>
-  <h1>🍽️ ${esc(weekLabel(week.weekStart))}</h1>
+  <h1>${esc(weekLabel(week.weekStart))}</h1>
   <p>Plan de comidas de ${data.persons.map((p) => esc(p.name)).join(' y ')}</p>
   <nav>
-    <a href="#tab-plan">📅 Plan</a>
-    <a href="#tab-compra">🛒 Compra</a>
-    <a href="#tab-recetas">🍳 Recetas</a>
+    <a href="#tab-plan">Plan</a>
+    <a href="#tab-compra">Compra</a>
+    <a href="#tab-recetas">Recetas</a>
   </nav>
 </header>
 <main>
-  <section class="tab" id="tab-plan"><h2>📅 Plan semanal</h2>
+  <section class="tab" id="tab-plan"><h2>Plan semanal</h2>
 ${dayCards}
   </section>
-  <section class="tab" id="tab-compra"><h2>🛒 Lista de la compra</h2>
+  <section class="tab" id="tab-compra"><h2>Lista de la compra</h2>
   <section class="card total-card">
     <h3>Total a comprar</h3>
     <div class="big">${fmtEuro(totals.totalToBuy)}</div>
     ${totals.totalNeeded !== totals.totalToBuy ? `<p>La semana necesita ${fmtEuro(totals.totalNeeded)}; ya hay en casa ${fmtEuro(totals.totalNeeded - totals.totalToBuy)}.</p>` : ''}
-    ${totals.linesWithoutPrice > 0 ? `<p>⚠️ ${totals.linesWithoutPrice === 1 ? '1 producto sin precio no cuenta' : `${totals.linesWithoutPrice} productos sin precio no cuentan`} en el total.</p>` : ''}
+    ${totals.linesWithoutPrice > 0 ? `<p>${totals.linesWithoutPrice === 1 ? '1 producto sin precio no cuenta' : `${totals.linesWithoutPrice} productos sin precio no cuentan`} en el total.</p>` : ''}
   </section>
 ${shoppingHtml}
 ${extrasHtml}
   </section>
-  <section class="tab" id="tab-recetas"><h2>🍳 Recetas de la semana</h2>
+  <section class="tab" id="tab-recetas"><h2>Recetas de la semana</h2>
 ${recipesHtml.length > 0 ? recipesHtml : '<p class="empty">No hay recetas planificadas.</p>'}
   </section>
 </main>

@@ -7,6 +7,7 @@ import { displayPrice, priceIsStale } from '../lib/nutrition'
 import { fmtEuro, fmtInput, fmtNum, normalizeSearch, parseNum } from '../lib/format'
 import { Modal } from '../components/Modal'
 import { EmptyState } from '../components/EmptyState'
+import { IconPencil, IconTrash } from '../components/icons'
 
 const UNIT_LABELS: Record<Unit, string> = { g: 'gramos (g)', ml: 'mililitros (ml)', ud: 'unidades' }
 const PACK_SIZE_SUFFIX: Record<Unit, string> = { g: 'g', ml: 'ml', ud: 'ud' }
@@ -319,7 +320,6 @@ export function IngredientesPage() {
       {filtered.length === 0 ? (
         <div className="mt-4">
           <EmptyState
-            icon="🥕"
             title="Ningún ingrediente coincide"
             hint="Prueba a cambiar la búsqueda o la categoría."
           />
@@ -363,9 +363,9 @@ export function IngredientesPage() {
                           {priceIsStale(ing) && (
                             <span
                               title="Precio de hace más de 3 meses"
-                              className="ml-1 cursor-help text-amber-500"
+                              className="ml-1 cursor-help text-xs text-amber-600"
                             >
-                              ⏳
+                              (antiguo)
                             </span>
                           )}
                           {ing.packPrice !== undefined && ing.packSize !== undefined && (
@@ -383,16 +383,18 @@ export function IngredientesPage() {
                         onClick={() => setEditing(ing)}
                         className="rounded-lg px-2.5 py-1.5 text-stone-400 hover:bg-orange-100 hover:text-stone-600"
                         title="Editar"
+                        aria-label="Editar"
                       >
-                        ✏️
+                        <IconPencil className="size-4" />
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(ing)}
                         className="rounded-lg px-2.5 py-1.5 text-stone-400 hover:bg-red-50 hover:text-red-600"
                         title="Borrar"
+                        aria-label="Borrar"
                       >
-                        🗑️
+                        <IconTrash className="size-4" />
                       </button>
                     </td>
                   </tr>

@@ -29,6 +29,7 @@ import { fillWeek } from '../lib/suggest'
 import { fetchDemoBackup } from '../lib/demo'
 import { Modal } from '../components/Modal'
 import { EmptyState } from '../components/EmptyState'
+import { IconChevronLeft, IconChevronRight, IconPaste } from '../components/icons'
 
 const STATUS_TEXT: Record<TargetStatus, string> = {
   ok: 'text-green-600',
@@ -45,10 +46,10 @@ const STATUS_CHIP: Record<TargetStatus, string> = {
 }
 
 const MEAL_ROW_LABELS: Record<MealType, string> = {
-  desayuno: '🥐 Desayuno',
-  almuerzo: '🍲 Almuerzo',
-  cena: '🌙 Cena',
-  snack: '🍎 Snacks',
+  desayuno: 'Desayuno',
+  almuerzo: 'Almuerzo',
+  cena: 'Cena',
+  snack: 'Snacks',
 }
 
 /** En táctil no hay arrastre nativo ni Ctrl: los hints de ratón sobran. */
@@ -78,10 +79,10 @@ function SlotMenu({
 }) {
   const filled = slot !== undefined
   const items: { label: string; enabled: boolean; danger?: boolean; run: () => void }[] = [
-    { label: '✂️ Cortar', enabled: filled, run: onCut },
-    { label: '📄 Copiar', enabled: filled, run: onCopy },
-    { label: '📋 Pegar', enabled: hasClipboard, run: onPaste },
-    { label: '🗑️ Quitar', enabled: filled, danger: true, run: onRemove },
+    { label: 'Cortar', enabled: filled, run: onCut },
+    { label: 'Copiar', enabled: filled, run: onCopy },
+    { label: 'Pegar', enabled: hasClipboard, run: onPaste },
+    { label: 'Quitar', enabled: filled, danger: true, run: onRemove },
   ]
   return (
     <div
@@ -186,7 +187,7 @@ function SlotEditor({
 
   return (
     <Modal
-      title={`${slotRef.meal === 'snack' ? '🍎 Snack' : MEAL_ROW_LABELS[slotRef.meal]} · ${dayLabel(weekStart, slotRef.dayIdx)}`}
+      title={`${slotRef.meal === 'snack' ? 'Snack' : MEAL_ROW_LABELS[slotRef.meal]} · ${dayLabel(weekStart, slotRef.dayIdx)}`}
       onClose={onClose}
     >
       <div className="space-y-4">
@@ -465,7 +466,6 @@ export function SemanaPage() {
     }
     return (
       <EmptyState
-        icon="📅"
         title="Aún no hay ninguna semana"
         hint="Crea la primera para empezar a planificar, o carga la semana de ejemplo para ver la app llena."
       >
@@ -481,7 +481,7 @@ export function SemanaPage() {
           onClick={() => void handleDemo()}
           className="rounded-lg border border-orange-300 px-5 py-2.5 text-sm font-medium text-orange-700 hover:bg-orange-50"
         >
-          ✨ Cargar semana de ejemplo
+          Cargar semana de ejemplo
         </button>
       </EmptyState>
     )
@@ -506,10 +506,11 @@ export function SemanaPage() {
             <button
               type="button"
               onClick={() => saveSlot(ref, cloneSlot(clipboard))}
-              className="shrink-0 rounded-lg border border-dashed border-orange-300 px-1 text-xs text-orange-500 hover:bg-orange-50"
+              className="shrink-0 rounded-lg border border-dashed border-orange-300 px-1.5 text-xs text-orange-500 hover:bg-orange-50"
               title="Pegar aquí"
+              aria-label="Pegar aquí"
             >
-              📋
+              <IconPaste className="size-3.5" />
             </button>
           )}
         </div>
@@ -563,8 +564,9 @@ export function SemanaPage() {
             onClick={() => setViewedId(weeks[weekIdx - 1].id)}
             className="rounded-lg px-2.5 py-1.5 text-stone-500 hover:bg-orange-100 disabled:opacity-30"
             title="Semana anterior"
+            aria-label="Semana anterior"
           >
-            ◀
+            <IconChevronLeft className="size-4" />
           </button>
           <h2 className="text-xl font-bold text-stone-800">{weekLabel(week.weekStart)}</h2>
           <button
@@ -573,13 +575,14 @@ export function SemanaPage() {
             onClick={() => setViewedId(weeks[weekIdx + 1].id)}
             className="rounded-lg px-2.5 py-1.5 text-stone-500 hover:bg-orange-100 disabled:opacity-30"
             title="Semana siguiente"
+            aria-label="Semana siguiente"
           >
-            ▶
+            <IconChevronRight className="size-4" />
           </button>
         </div>
         {week.id === (data.activeWeekId ?? weeks[weeks.length - 1].id) ? (
           <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
-            🛒 Semana activa
+            Semana activa
           </span>
         ) : (
           <button
@@ -588,7 +591,7 @@ export function SemanaPage() {
             className="rounded-full border border-orange-200 px-2.5 py-1 text-xs font-medium text-orange-700 hover:bg-orange-100"
             title="La lista de la Compra pasará a usar esta semana"
           >
-            🛒 Hacer activa
+            Hacer activa
           </button>
         )}
         <div className="ml-auto flex gap-2">
@@ -598,7 +601,7 @@ export function SemanaPage() {
             className="rounded-lg border border-orange-300 px-3 py-2 text-sm font-medium text-orange-700 hover:bg-orange-50"
             title="Propone recetas para los huecos vacíos según los objetivos de cada persona"
           >
-            ✨ Rellenar
+            Rellenar
           </button>
           <button
             type="button"
@@ -612,7 +615,7 @@ export function SemanaPage() {
             className="rounded-lg border border-orange-300 px-3 py-2 text-sm font-medium text-orange-700 hover:bg-orange-50"
             title="Descarga un HTML para consultar el plan desde el móvil"
           >
-            📱 Exportar
+            Exportar
           </button>
           <button
             type="button"
@@ -635,7 +638,6 @@ export function SemanaPage() {
       {autoFill !== null && autoFill.weekId === week.id && (
         <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-orange-200 bg-orange-50 px-4 py-2.5 text-sm text-stone-700">
           <span>
-            ✨{' '}
             {autoFill.placed.length === 0
               ? 'No había huecos vacíos que rellenar.'
               : `Se ${autoFill.placed.length === 1 ? 'ha propuesto 1 plato' : `han propuesto ${autoFill.placed.length} platos`} para los huecos vacíos.`}
@@ -664,7 +666,7 @@ export function SemanaPage() {
             className="ml-auto rounded px-1.5 text-stone-400 hover:bg-orange-100 hover:text-stone-600"
             title="Cerrar"
           >
-            ✕
+            ×
           </button>
         </div>
       )}
@@ -723,9 +725,12 @@ export function SemanaPage() {
                   </div>
                   <p className="mt-1 text-[11px] text-stone-500">
                     Reparto calórico:{' '}
-                    <span className="text-rose-400">●</span> P {fmtNum(split.protein)} % ·{' '}
-                    <span className="text-amber-400">●</span> H {fmtNum(split.carbs)} % ·{' '}
-                    <span className="text-sky-400">●</span> G {fmtNum(split.fat)} %
+                    <span className="inline-block size-2 rounded-full bg-rose-300" /> P{' '}
+                    {fmtNum(split.protein)} %{' · '}
+                    <span className="inline-block size-2 rounded-full bg-amber-300" /> H{' '}
+                    {fmtNum(split.carbs)} %{' · '}
+                    <span className="inline-block size-2 rounded-full bg-sky-300" /> G{' '}
+                    {fmtNum(split.fat)} %
                   </p>
                 </div>
               )}
@@ -817,7 +822,7 @@ export function SemanaPage() {
               ))}
             </tr>
             <tr>
-              <th className="sticky left-0 z-10 bg-white px-3 py-2 text-left text-xs font-medium text-stone-500">📝 Nota</th>
+              <th className="sticky left-0 z-10 bg-white px-3 py-2 text-left text-xs font-medium text-stone-500">Nota</th>
               {week.days.map((day, i) => (
                 <td key={i} className="px-1.5 py-1.5 align-top">
                   <input

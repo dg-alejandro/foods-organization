@@ -6,11 +6,11 @@ import { CompraPage } from './pages/CompraPage'
 import { AjustesPage } from './pages/AjustesPage'
 
 const TABS = [
-  { key: 'semana', label: 'Semana', icon: '📅' },
-  { key: 'recetas', label: 'Recetas', icon: '🍳' },
-  { key: 'ingredientes', label: 'Ingredientes', icon: '🥕' },
-  { key: 'compra', label: 'Compra', icon: '🛒' },
-  { key: 'ajustes', label: 'Ajustes', icon: '⚙️' },
+  { key: 'semana', label: 'Semana' },
+  { key: 'recetas', label: 'Recetas' },
+  { key: 'ingredientes', label: 'Ingredientes' },
+  { key: 'compra', label: 'Compra' },
+  { key: 'ajustes', label: 'Ajustes' },
 ] as const
 
 type TabKey = (typeof TABS)[number]['key']
@@ -27,23 +27,24 @@ function App() {
       />
 
       <header className="sticky top-0 z-10 border-b border-orange-100 bg-white/70 backdrop-blur-md">
-        <div className="mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center gap-x-6 gap-y-2">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-1.5 px-4 py-3">
           <h1 className="bg-gradient-to-r from-orange-800 via-orange-600 to-orange-400 bg-clip-text text-xl font-black text-transparent">
-            🍽️ Comidas de la semana
+            Comidas de la semana
           </h1>
-          <nav className="flex gap-1">
+          {/* min-w-0 + overflow-x-auto: en pantallas estrechas la barra se
+              desplaza dentro de sí misma en vez de desbordar la página */}
+          <nav className="-mx-1 flex min-w-0 max-w-full gap-0.5 overflow-x-auto px-1 sm:gap-1">
             {TABS.map((t) => (
               <button
                 key={t.key}
                 type="button"
                 onClick={() => setTab(t.key)}
-                className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-all duration-200 ${
+                className={`shrink-0 rounded-full px-2 py-1.5 text-xs font-medium whitespace-nowrap transition-all duration-200 sm:px-3 sm:text-sm ${
                   tab === t.key
                     ? 'bg-orange-600 text-white shadow-md shadow-orange-600/25'
                     : 'text-stone-600 hover:bg-orange-100'
                 }`}
               >
-                <span className="mr-1">{t.icon}</span>
                 {t.label}
               </button>
             ))}
